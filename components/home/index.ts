@@ -1,0 +1,13 @@
+export { Navbar } from './Navbar';
+export { Hero } from './Hero';
+export { Integrations } from './Integrations';
+export { PainPoints } from './PainPoints';
+export { CodeDemo } from './CodeDemo';
+export { HowItWorks } from './HowItWorks';
+export { Formats } from './Formats';
+export { Comparison } from './Comparison';
+export { Roadmap } from './Roadmap';
+export { FAQ } from './FAQ';
+export { Pricing } from './Pricing';
+export { CTA } from './CTA';
+export { Footer } from './Footer';
