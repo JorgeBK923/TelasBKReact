@@ -9,7 +9,7 @@
 }
 
 .dark {
-  --background: #0a0e1a;
+  --background: #0f1323;
   --foreground: #ededed;
 }
 
@@ -17,6 +17,17 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  /* Custom colors from design */
+  --color-primary: #0033ff;
+  --color-primary-light: #EEF2FF;
+  --color-primary-dark: #0022cc;
+  --color-background-light: #F5F6F8;
+  --color-background-dark: #0f1323;
+  --color-card-dark: #1C1C1E;
+
+  /* Custom shadows */
+  --shadow-glow: 0 4px 12px rgba(0, 51, 255, 0.25);
 }
 
 body {
@@ -24,4 +35,118 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+/* No scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* ------- FALLBACK CSS UTILITIES -------
+   These classes ensure colors work if Tailwind v4 
+   doesn't pick up custom @theme variables
+*/
+
+/* Primary color utilities - these are same in light/dark */
+.bg-primary {
+  background-color: #0033ff !important;
+}
+
+.text-primary {
+  color: #0033ff !important;
+}
+
+.border-primary {
+  border-color: #0033ff !important;
+}
+
+/* Primary light - different in dark mode */
+.bg-primary-light {
+  background-color: #EEF2FF;
+}
+
+.dark .bg-primary-light {
+  background-color: rgba(0, 51, 255, 0.2);
+}
+
+/* Card dark - only in dark mode */
+.dark .bg-card-dark {
+  background-color: #1C1C1E !important;
+}
+
+/* Background colors */
+.bg-background-light {
+  background-color: #F5F6F8;
+}
+
+.dark .bg-background-light {
+  background-color: #0f1323;
+}
+
+.bg-background-dark {
+  background-color: #0f1323 !important;
+}
+
+/* White background in dark mode should use card-dark */
+.dark .bg-white,
+:where(.dark, .dark *) .bg-white,
+.dark aside,
+:where(.dark) aside {
+  background-color: #1C1C1E !important;
+}
+
+/* Ensure dark:bg-card-dark works */
+.dark .dark\:bg-card-dark,
+:where(.dark, .dark *) .dark\:bg-card-dark {
+  background-color: #1C1C1E !important;
+}
+
+/* Shadow glow */
+.shadow-glow {
+  box-shadow: 0 4px 12px rgba(0, 51, 255, 0.25) !important;
 }
