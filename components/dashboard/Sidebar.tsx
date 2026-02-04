@@ -9,6 +9,7 @@ import {
     Lock,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface NavItem {
     href: string;
@@ -17,36 +18,23 @@ interface NavItem {
     section?: string;
 }
 
-interface SidebarProps {
-    activePage: "dados" | "plano" | "uso" | "integracoes" | "preferencias" | "seguranca";
-}
-
 const navItems: NavItem[] = [
-    { href: "/dashboard", label: "Dados", icon: <User className="size-5" />, section: "Conta" },
+    { href: "/profile", label: "Dados", icon: <User className="size-5" />, section: "Conta" },
     { href: "/billing", label: "Plano", icon: <CreditCard className="size-5" /> },
-    { href: "/dashboard", label: "Uso", icon: <BarChart3 className="size-5" /> },
-    { href: "#", label: "Integrações", icon: <Puzzle className="size-5" />, section: "Sistema" },
-    { href: "#", label: "Preferências", icon: <Settings className="size-5" /> },
-    { href: "#", label: "Segurança", icon: <Lock className="size-5" /> },
+    { href: "/usage", label: "Uso", icon: <BarChart3 className="size-5" /> },
+    { href: "/integrations", label: "Integrações", icon: <Puzzle className="size-5" />, section: "Sistema" },
+    { href: "/settings", label: "Preferências", icon: <Settings className="size-5" /> },
+    { href: "/security", label: "Segurança", icon: <Lock className="size-5" /> },
 ];
 
-const pageToLabel: Record<SidebarProps["activePage"], string> = {
-    dados: "Dados",
-    plano: "Plano",
-    uso: "Uso",
-    integracoes: "Integrações",
-    preferencias: "Preferências",
-    seguranca: "Segurança",
-};
-
-export function Sidebar({ activePage }: SidebarProps) {
-    const activeLabel = pageToLabel[activePage];
+export function Sidebar() {
+    const pathname = usePathname();
 
     return (
         <aside className="w-64 flex-none bg-white dark:bg-card-dark border-r border-slate-200 dark:border-white/10 flex flex-col justify-between py-6 hidden md:flex transition-colors duration-300">
             <nav className="flex flex-col gap-1">
                 {navItems.map((item, index) => {
-                    const isActive = item.label === activeLabel;
+                    const isActive = pathname === item.href;
                     const showSection = item.section;
 
                     return (

@@ -32,9 +32,18 @@ Plataforma web desenvolvida com **Next.js 16**, **React 19** e **Tailwind CSS 4*
 Projeto-BugKillers/
 ├── app/                          # App Router do Next.js
 │   ├── (dashboard)/              # Grupo de rotas do Dashboard
+│   │   ├── layout.tsx            # Layout compartilhado (Header + Sidebar)
+│   │   ├── profile/              # Página de Dados Pessoais
+│   │   │   └── page.tsx
 │   │   ├── billing/              # Página de Plano & Faturamento
 │   │   │   └── page.tsx
-│   │   └── dashboard/            # Página de Uso & Limites
+│   │   ├── usage/                # Página de Uso & Limites
+│   │   │   └── page.tsx
+│   │   ├── integrations/         # Página de Integrações
+│   │   │   └── page.tsx
+│   │   ├── settings/             # Página de Preferências
+│   │   │   └── page.tsx
+│   │   └── security/             # Página de Segurança
 │   │       └── page.tsx
 │   ├── (website)/                # Grupo de rotas do site público
 │   │   └── page.tsx              # Landing page
@@ -46,7 +55,9 @@ Projeto-BugKillers/
 │   ├── dashboard/                # Componentes do painel
 │   │   ├── Header.tsx            # Cabeçalho azul + toggle tema
 │   │   ├── Sidebar.tsx           # Menu lateral com navegação
-│   │   ├── DashboardLayout.tsx   # Wrapper de layout
+│   │   ├── DashboardLayout.tsx   # Wrapper de layout (legado)
+│   │   ├── UserProfileCard.tsx   # Card de perfil reutilizável
+│   │   ├── DeleteAccountModal.tsx # Modal de confirmação de exclusão
 │   │   └── index.ts              # Exports centralizados
 │   │
 │   └── home/                     # Componentes da landing page
@@ -60,8 +71,10 @@ Projeto-BugKillers/
 │   └── ThemeProvider.tsx         # Provider do next-themes
 │
 ├── drafts/                       # Protótipos HTML originais
-│   ├── DraftUso.html             # Design da página de Uso
-│   └── DraftPlano.html           # Design da página de Plano
+│   ├── DraftDados.tsx            # Design da página de Dados
+│   ├── DraftIntegracoes.tsx      # Design da página de Integrações
+│   ├── DraftPreferencia.tsx      # Design da página de Preferências
+│   └── DraftSeguranca.tsx        # Design da página de Segurança
 │
 ├── public/                       # Arquivos estáticos
 ├── tailwind.config.ts            # Configuração do Tailwind
@@ -119,30 +132,39 @@ Cabeçalho principal com:
 - Fundo azul vibrante (#0033ff)
 
 #### `Sidebar.tsx`
-Menu lateral com:
-- Seção "Conta": Dados, Plano, Uso
-- Seção "Sistema": Integrações, Preferências, Segurança
+Menu lateral com navegação automática:
+- **Seção "Conta"**: Dados, Plano, Uso
+- **Seção "Sistema"**: Integrações, Preferências, Segurança
 - Indicador de página ativa (borda azul lateral)
-- Prop `activePage` para highlight dinâmico
+- Usa `usePathname()` para detectar a rota ativa automaticamente
 
-#### `DashboardLayout.tsx`
-Layout wrapper que combina Header + Sidebar + área de conteúdo.
+#### `UserProfileCard.tsx`
+Card de perfil reutilizável com:
+- Avatar do usuário com indicador de status
+- Botões de alterar/remover foto
+- Nome, email e badge do plano
+- Informações de membro desde e última atividade
+- Botão "Ver Perfil Público"
+
+#### `DeleteAccountModal.tsx`
+Modal de confirmação crítica com:
+- Cabeçalho com ícone de alerta vermelho
+- Texto de aviso sobre ação irreversível
+- **Mecanismo de segurança**: Input para digitar "EXCLUIR"
+- Botão de confirmação (inativo até digitar corretamente)
+- Botão de cancelamento "Manter minha conta"
+- Lista do que será excluído
 
 ### Páginas
 
-#### `/dashboard` (Uso & Limites)
-- Card de perfil do usuário
-- Estatísticas de cenários gerados
-- Card de economia estimada
-- Gráfico de histórico de uso
-- Performance por agente
-
-#### `/billing` (Plano & Faturamento)
-- Card do plano atual (Enterprise)
-- Comparação de planos (Free, Startup, Enterprise)
-- Histórico de faturas
-- Método de pagamento
-- Card "Indique e Ganhe"
+| Rota | Página | Descrição |
+|------|--------|----------|
+| `/profile` | Dados Pessoais | Formulário de perfil, assinatura, visão de uso |
+| `/billing` | Plano & Faturamento | Plano atual, comparação de planos, faturas |
+| `/usage` | Uso & Limites | Consumo mensal, economia estimada, histórico |
+| `/integrations` | Integrações | Cards de ferramentas (Jira, Azure, Slack, Postman) |
+| `/settings` | Preferências | Tema, idioma, notificações push e email |
+| `/security` | Segurança | Senha, 2FA, sessões ativas, alertas, zona de perigo |
 
 ---
 
