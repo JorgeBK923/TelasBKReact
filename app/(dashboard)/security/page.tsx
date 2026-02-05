@@ -11,16 +11,56 @@ import {
     Laptop,
     Smartphone,
     LaptopMinimal,
+    Loader2,
+    CheckCircle,
 } from "lucide-react";
+import { ChangePasswordModal } from "@/components/dashboard/ChangePasswordModal";
+import { TwoFactorModal } from "@/components/dashboard/TwoFactorModal";
+import { LogoutAllSessionsModal } from "@/components/dashboard/LogoutAllSessionsModal";
+
 
 export default function SecurityPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+    const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
+    const [isLogoutAllModalOpen, setIsLogoutAllModalOpen] = useState(false);
+    const [isSavingAlerts, setIsSavingAlerts] = useState(false);
+    const [showSuccessToast, setShowSuccessToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+
+    const triggerToast = (message: string) => {
+        setToastMessage(message);
+        setShowSuccessToast(true);
+        setTimeout(() => setShowSuccessToast(false), 3000);
+    };
+
+    // Security Alerts State
+    const [securityAlerts, setSecurityAlerts] = useState({
+        newDevice: true,
+        passwordChange: true,
+        twoFactorDisabled: true,
+    });
 
     const handleDeleteAccount = () => {
         // Aqui você implementaria a lógica de exclusão
         console.log("Conta excluída!");
         setIsDeleteModalOpen(false);
+        triggerToast("Sua conta foi excluída permanentemente.");
     };
+
+    const handleLogoutAllSesssions = (keepCurrent: boolean) => {
+        console.log("Sessões encerradas. Manter atual:", keepCurrent);
+        triggerToast("Todas as outras sessões foram encerradas.");
+    };
+
+    const handleSaveAlerts = () => {
+        setIsSavingAlerts(true);
+        setTimeout(() => {
+            setIsSavingAlerts(false);
+            triggerToast("Configurações de alerta salvas com sucesso!");
+        }, 1000);
+    };
+
     return (
         <div className="max-w-5xl mx-auto flex flex-col gap-6">
             {/* Profile Card */}
@@ -68,7 +108,10 @@ export default function SecurityPage() {
                             </div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <button className="w-full px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">
+                            <button
+                                onClick={() => setIsPasswordModalOpen(true)}
+                                className="w-full px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
+                            >
                                 Alterar senha
                             </button>
                             <p className="text-xs text-slate-400 text-center">
@@ -104,7 +147,10 @@ export default function SecurityPage() {
                                 </p>
                             </div>
                         </div>
-                        <button className="w-full px-4 py-2.5 rounded-lg border-2 border-primary text-primary text-sm font-semibold hover:bg-primary hover:text-white transition-colors">
+                        <button
+                            onClick={() => setIsTwoFactorModalOpen(true)}
+                            className="w-full px-4 py-2.5 rounded-lg border-2 border-primary text-primary text-sm font-semibold hover:bg-primary hover:text-white transition-colors"
+                        >
                             Ativar 2FA
                         </button>
                     </div>
@@ -201,7 +247,10 @@ export default function SecurityPage() {
                         </div>
                     </div>
                     <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5 flex justify-end">
-                        <button className="px-4 py-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors">
+                        <button
+                            onClick={() => setIsLogoutAllModalOpen(true)}
+                            className="px-4 py-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors"
+                        >
                             Encerrar todas as sessões
                         </button>
                     </div>
@@ -224,8 +273,9 @@ export default function SecurityPage() {
                         <div className="flex items-start gap-3">
                             <div className="flex items-center h-5">
                                 <input
-                                    defaultChecked
-                                    className="size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                                    checked={securityAlerts.newDevice}
+                                    onChange={(e) => setSecurityAlerts(prev => ({ ...prev, newDevice: e.target.checked }))}
+                                    className="size-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                                     id="alert-new-device"
                                     name="alert-new-device"
                                     type="checkbox"
@@ -233,7 +283,7 @@ export default function SecurityPage() {
                             </div>
                             <div className="text-sm">
                                 <label
-                                    className="font-medium text-slate-900 dark:text-white"
+                                    className="font-medium text-slate-900 dark:text-white cursor-pointer"
                                     htmlFor="alert-new-device"
                                 >
                                     Login em novo dispositivo
@@ -247,8 +297,9 @@ export default function SecurityPage() {
                         <div className="flex items-start gap-3">
                             <div className="flex items-center h-5">
                                 <input
-                                    defaultChecked
-                                    className="size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                                    checked={securityAlerts.passwordChange}
+                                    onChange={(e) => setSecurityAlerts(prev => ({ ...prev, passwordChange: e.target.checked }))}
+                                    className="size-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                                     id="alert-password"
                                     name="alert-password"
                                     type="checkbox"
@@ -256,7 +307,7 @@ export default function SecurityPage() {
                             </div>
                             <div className="text-sm">
                                 <label
-                                    className="font-medium text-slate-900 dark:text-white"
+                                    className="font-medium text-slate-900 dark:text-white cursor-pointer"
                                     htmlFor="alert-password"
                                 >
                                     Alteração de senha
@@ -270,8 +321,9 @@ export default function SecurityPage() {
                         <div className="flex items-start gap-3">
                             <div className="flex items-center h-5">
                                 <input
-                                    defaultChecked
-                                    className="size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                                    checked={securityAlerts.twoFactorDisabled}
+                                    onChange={(e) => setSecurityAlerts(prev => ({ ...prev, twoFactorDisabled: e.target.checked }))}
+                                    className="size-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                                     id="alert-2fa"
                                     name="alert-2fa"
                                     type="checkbox"
@@ -279,7 +331,7 @@ export default function SecurityPage() {
                             </div>
                             <div className="text-sm">
                                 <label
-                                    className="font-medium text-slate-900 dark:text-white"
+                                    className="font-medium text-slate-900 dark:text-white cursor-pointer"
                                     htmlFor="alert-2fa"
                                 >
                                     Desativação de 2FA
@@ -292,8 +344,19 @@ export default function SecurityPage() {
                         </div>
                     </div>
                     <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex justify-end">
-                        <button className="px-4 py-2 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
-                            Salvar
+                        <button
+                            onClick={handleSaveAlerts}
+                            disabled={isSavingAlerts}
+                            className="px-6 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                        >
+                            {isSavingAlerts ? (
+                                <>
+                                    <Loader2 className="size-4 animate-spin" />
+                                    Salvando...
+                                </>
+                            ) : (
+                                "Salvar"
+                            )}
                         </button>
                     </div>
                 </div>
@@ -310,9 +373,6 @@ export default function SecurityPage() {
                         Ações irreversíveis ou que afetam o acesso à sua conta.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <button className="px-4 py-2.5 rounded-lg border border-red-200 dark:border-red-800 bg-white dark:bg-transparent text-red-600 dark:text-red-400 text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                            Desativar conta
-                        </button>
                         <button
                             onClick={() => setIsDeleteModalOpen(true)}
                             className="px-4 py-2.5 rounded-lg text-red-600 dark:text-red-400 text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors"
@@ -330,12 +390,40 @@ export default function SecurityPage() {
                 </p>
             </footer>
 
+            {/* Security Modals */}
+            <ChangePasswordModal
+                isOpen={isPasswordModalOpen}
+                onClose={() => setIsPasswordModalOpen(false)}
+            />
+            <TwoFactorModal
+                isOpen={isTwoFactorModalOpen}
+                onClose={() => setIsTwoFactorModalOpen(false)}
+            />
+            <LogoutAllSessionsModal
+                isOpen={isLogoutAllModalOpen}
+                onClose={() => setIsLogoutAllModalOpen(false)}
+                onConfirm={handleLogoutAllSesssions}
+            />
             {/* Delete Account Modal */}
             <DeleteAccountModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleDeleteAccount}
             />
+
+            {/* Toast Notification */}
+            {showSuccessToast && (
+                <div className="fixed bottom-8 right-8 z-50 animate-fade-in-up">
+                    <div className="flex items-center gap-3 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-lg p-4 pr-6">
+                        <div className="flex-none text-green-500">
+                            <CheckCircle className="size-5" />
+                        </div>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                            {toastMessage}
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

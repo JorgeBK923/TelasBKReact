@@ -1,9 +1,30 @@
 "use client";
 
+import { useState } from "react";
 import { UserProfileCard } from "@/components/dashboard/UserProfileCard";
+import { NewIntegrationModal } from "@/components/dashboard/NewIntegrationModal";
+import { IntegrationNotifyModal } from "@/components/dashboard/IntegrationNotifyModal";
+import { IntegrationConfigModal } from "@/components/dashboard/IntegrationConfigModal";
+import { IntegrationDisconnectModal } from "@/components/dashboard/IntegrationDisconnectModal";
 import { Kanban, CircuitBoard, MessageSquare, Rocket, Plus, Lock } from "lucide-react";
 
 export default function IntegrationsPage() {
+    const [isNewIntegrationModalOpen, setIsNewIntegrationModalOpen] = useState(false);
+    const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
+    const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+    const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
+    const [selectedIntegration, setSelectedIntegration] = useState<"jira" | "azure" | "slack" | null>(null);
+
+    const handleConfigure = (integration: "jira" | "azure" | "slack") => {
+        setSelectedIntegration(integration);
+        setIsConfigModalOpen(true);
+    };
+
+    const handleDisconnect = (integration: "jira" | "azure") => {
+        setSelectedIntegration(integration);
+        setIsDisconnectModalOpen(true);
+    };
+
     return (
         <div className="max-w-5xl mx-auto flex flex-col gap-6">
             {/* Profile Card */}
@@ -58,10 +79,16 @@ export default function IntegrationsPage() {
                         </div>
                     </div>
                     <div className="flex gap-3 mt-auto">
-                        <button className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        <button 
+                            onClick={() => handleConfigure("jira")}
+                            className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        >
                             Configurar
                         </button>
-                        <button className="px-3 py-2 rounded-lg border border-transparent text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                        <button 
+                            onClick={() => handleDisconnect("jira")}
+                            className="px-3 py-2 rounded-lg border border-transparent text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        >
                             Desconectar
                         </button>
                     </div>
@@ -102,10 +129,16 @@ export default function IntegrationsPage() {
                         </div>
                     </div>
                     <div className="flex gap-3 mt-auto">
-                        <button className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        <button 
+                            onClick={() => handleConfigure("azure")}
+                            className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        >
                             Configurar
                         </button>
-                        <button className="px-3 py-2 rounded-lg border border-transparent text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                        <button 
+                            onClick={() => handleDisconnect("azure")}
+                            className="px-3 py-2 rounded-lg border border-transparent text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        >
                             Desconectar
                         </button>
                     </div>
@@ -142,7 +175,10 @@ export default function IntegrationsPage() {
                         </p>
                     </div>
                     <div className="flex gap-3 mt-auto">
-                        <button className="w-full px-3 py-2 rounded-lg bg-primary hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm shadow-blue-500/20">
+                        <button 
+                            onClick={() => handleConfigure("slack")}
+                            className="w-full px-3 py-2 rounded-lg bg-primary hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm shadow-blue-500/20"
+                        >
                             Conectar
                         </button>
                     </div>
@@ -179,7 +215,10 @@ export default function IntegrationsPage() {
                         </p>
                     </div>
                     <div className="flex gap-3 mt-auto">
-                        <button className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        <button 
+                            onClick={() => setIsNotifyModalOpen(true)}
+                            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        >
                             Me Notifique
                         </button>
                     </div>
@@ -187,6 +226,7 @@ export default function IntegrationsPage() {
 
                 {/* Add New Integration Card */}
                 <button
+                    onClick={() => setIsNewIntegrationModalOpen(true)}
                     className="group bg-slate-50 dark:bg-white/5 rounded-xl p-6 border-2 border-dashed border-slate-300 dark:border-white/10 flex flex-col items-center justify-center h-full min-h-[280px] hover:border-primary dark:hover:border-primary hover:bg-slate-100 dark:hover:bg-white/10 transition-all duration-300 animate-fade-in-up"
                     style={{ animationDelay: "400ms" }}
                 >
@@ -209,6 +249,29 @@ export default function IntegrationsPage() {
                     © 2026 BugKillers AI. All rights reserved.
                 </p>
             </footer>
+
+            {/* Modals */}
+            <NewIntegrationModal
+                isOpen={isNewIntegrationModalOpen}
+                onClose={() => setIsNewIntegrationModalOpen(false)}
+            />
+            <IntegrationNotifyModal
+                isOpen={isNotifyModalOpen}
+                onClose={() => setIsNotifyModalOpen(false)}
+                serviceName="Postman"
+                serviceIcon={Rocket}
+                serviceColor="#FF6C37"
+            />
+            <IntegrationConfigModal
+                isOpen={isConfigModalOpen}
+                onClose={() => setIsConfigModalOpen(false)}
+                integration={selectedIntegration}
+            />
+            <IntegrationDisconnectModal
+                isOpen={isDisconnectModalOpen}
+                onClose={() => setIsDisconnectModalOpen(false)}
+                integration={selectedIntegration as "jira" | "azure"}
+            />
         </div>
     );
 }

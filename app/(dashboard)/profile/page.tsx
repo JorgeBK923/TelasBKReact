@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { UserProfileCard } from "@/components/dashboard/UserProfileCard";
 import {
     Mail,
@@ -7,13 +8,83 @@ import {
     Smartphone,
     CheckCircle,
     BadgeCheck,
-    FileText,
     Check,
     PiggyBank,
     RefreshCw,
 } from "lucide-react";
 
 export default function ProfilePage() {
+    const initialData = {
+        nome: "Ricardo Dev",
+        email: "ricardo@bugkillers.ai",
+        empresa: "BugKillers Inc.",
+        cargo: "CTO & Co-Founder",
+        telefone: "+55 11 99999-9999",
+    };
+
+    const [formData, setFormData] = useState(initialData);
+    const [isLoading, setIsLoading] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const handleChange = (field: string, value: string) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
+        // Clear error when user types
+        if (errors[field]) {
+            setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors[field];
+                return newErrors;
+            });
+        }
+    };
+
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.nome.trim()) {
+            newErrors.nome = "Nome é obrigatório";
+        }
+        if (!formData.email.trim()) {
+            newErrors.email = "Email é obrigatório";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = "Email inválido";
+        }
+        if (!formData.empresa.trim()) {
+            newErrors.empresa = "Empresa é obrigatória";
+        }
+        if (!formData.telefone.trim()) {
+            newErrors.telefone = "Telefone é obrigatório";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSave = async () => {
+        if (!validateForm()) return;
+
+        setIsLoading(true);
+        setShowSuccess(false);
+
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        setIsLoading(false);
+        setShowSuccess(true);
+
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+            setShowSuccess(false);
+        }, 3000);
+    };
+
+    const handleCancel = () => {
+        setFormData(initialData);
+        setErrors({});
+        setShowSuccess(false);
+    };
+
     return (
         <div className="max-w-4xl mx-auto flex flex-col gap-6">
             {/* Profile Card */}
@@ -36,10 +107,16 @@ export default function ProfilePage() {
                             Nome Completo
                         </label>
                         <input
-                            className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none"
+                            className={`w-full h-12 px-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
+                                errors.nome ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                            }`}
                             type="text"
-                            defaultValue="Ricardo Dev"
+                            value={formData.nome}
+                            onChange={(e) => handleChange("nome", e.target.value)}
                         />
+                        {errors.nome && (
+                            <p className="text-xs text-red-500 mt-1">{errors.nome}</p>
+                        )}
                     </div>
                     <div className="col-span-1">
                         <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
@@ -48,18 +125,25 @@ export default function ProfilePage() {
                         <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-5" />
                             <input
-                                className="w-full h-12 pl-10 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none"
+                                className={`w-full h-12 pl-10 pr-10 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
+                                    errors.email ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                                }`}
                                 type="email"
-                                defaultValue="ricardo@bugkillers.ai"
+                                value={formData.email}
+                                onChange={(e) => handleChange("email", e.target.value)}
                             />
                             <CheckCircle
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 size-5"
                             />
                         </div>
-                        <p className="text-xs text-green-600 dark:text-green-500 mt-1.5 font-medium flex items-center gap-1">
-                            <BadgeCheck className="size-3.5" />
-                            Email verificado
-                        </p>
+                        {errors.email ? (
+                            <p className="text-xs text-red-500 mt-1.5">{errors.email}</p>
+                        ) : (
+                            <p className="text-xs text-green-600 dark:text-green-500 mt-1.5 font-medium flex items-center gap-1">
+                                <BadgeCheck className="size-3.5" />
+                                Email verificado
+                            </p>
+                        )}
                     </div>
                     <div className="col-span-1">
                         <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
@@ -68,11 +152,17 @@ export default function ProfilePage() {
                         <div className="relative">
                             <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-5" />
                             <input
-                                className="w-full h-12 pl-10 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none"
+                                className={`w-full h-12 pl-10 pr-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
+                                    errors.empresa ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                                }`}
                                 type="text"
-                                defaultValue="BugKillers Inc."
+                                value={formData.empresa}
+                                onChange={(e) => handleChange("empresa", e.target.value)}
                             />
                         </div>
+                        {errors.empresa && (
+                            <p className="text-xs text-red-500 mt-1">{errors.empresa}</p>
+                        )}
                     </div>
                     <div className="col-span-1">
                         <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
@@ -81,7 +171,8 @@ export default function ProfilePage() {
                         <input
                             className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none"
                             type="text"
-                            defaultValue="CTO & Co-Founder"
+                            value={formData.cargo}
+                            onChange={(e) => handleChange("cargo", e.target.value)}
                         />
                     </div>
                     <div className="col-span-1">
@@ -91,24 +182,46 @@ export default function ProfilePage() {
                         <div className="relative">
                             <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-5" />
                             <input
-                                className="w-full h-12 pl-10 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none"
+                                className={`w-full h-12 pl-10 pr-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
+                                    errors.telefone ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                                }`}
                                 type="tel"
-                                defaultValue="+55 11 99999-9999"
+                                value={formData.telefone}
+                                onChange={(e) => handleChange("telefone", e.target.value)}
                             />
                         </div>
+                        {errors.telefone && (
+                            <p className="text-xs text-red-500 mt-1">{errors.telefone}</p>
+                        )}
                     </div>
                 </div>
                 <div className="px-6 md:px-8 py-4 bg-slate-50 dark:bg-white/5 border-t border-slate-200 dark:border-white/5 flex items-center justify-end gap-3">
-                    <div className="flex items-center gap-1 text-green-600 dark:text-green-500 text-sm font-semibold mr-2 animate-pulse">
-                        <CheckCircle className="size-4" />
-                        Perfil atualizado!
-                    </div>
-                    <button className="px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                    {showSuccess && (
+                        <div className="flex items-center gap-1 text-green-600 dark:text-green-500 text-sm font-semibold mr-2 animate-pulse">
+                            <CheckCircle className="size-4" />
+                            Perfil atualizado!
+                        </div>
+                    )}
+                    <button
+                        onClick={handleCancel}
+                        disabled={isLoading}
+                        className="px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         Cancelar
                     </button>
-                    <button className="px-8 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-semibold shadow-glow flex items-center gap-2 transition-all active:scale-95">
-                        <RefreshCw className="size-5 animate-spin" />
-                        Salvando...
+                    <button
+                        onClick={handleSave}
+                        disabled={isLoading}
+                        className="px-8 py-3 rounded-xl bg-primary hover:bg-primary/90 disabled:bg-primary/70 text-white text-sm font-semibold shadow-glow flex items-center gap-2 transition-all active:scale-95 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? (
+                            <>
+                                <RefreshCw className="size-5 animate-spin" />
+                                Salvando...
+                            </>
+                        ) : (
+                            "Salvar Alterações"
+                        )}
                     </button>
                 </div>
             </div>
@@ -139,17 +252,13 @@ export default function ProfilePage() {
                             </span>
                         </p>
                     </div>
-                    <div className="text-left md:text-right flex flex-col md:items-end gap-2">
+                    <div className="text-left md:text-right">
                         <div className="text-2xl font-bold text-slate-900 dark:text-white">
                             R$ 497
                             <span className="text-sm font-normal text-slate-500">
                                 /mês
                             </span>
                         </div>
-                        <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                            <FileText className="size-4" />
-                            Ver histórico de faturas
-                        </button>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -172,14 +281,7 @@ export default function ProfilePage() {
                             </li>
                         </ul>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-center justify-end gap-3 mt-4 md:mt-0 content-end">
-                        <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-primary text-primary text-sm font-semibold hover:bg-primary/5 transition-colors">
-                            Comparar Planos
-                        </button>
-                        <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors">
-                            Gerenciar Assinatura
-                        </button>
-                    </div>
+
                 </div>
             </div>
 
@@ -245,33 +347,6 @@ export default function ProfilePage() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            {/* Danger Zone */}
-            <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-                <h3 className="text-lg font-bold text-red-600 dark:text-red-500 mb-4">
-                    Zona de Perigo
-                </h3>
-                <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-white dark:bg-card-dark p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                    <div>
-                        <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                            Deletar Conta
-                        </h4>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-lg">
-                            Ao deletar sua conta, todos os dados, configurações
-                            e histórico de uso serão permanentemente removidos
-                            dos nossos servidores. Esta ação acionará um modal
-                            de confirmação e{" "}
-                            <strong className="text-slate-700 dark:text-slate-300">
-                                não pode ser desfeita
-                            </strong>
-                            .
-                        </p>
-                    </div>
-                    <button className="shrink-0 px-5 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                        Deletar Minha Conta
-                    </button>
                 </div>
             </div>
 

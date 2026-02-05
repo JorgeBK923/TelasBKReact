@@ -55,8 +55,20 @@ Projeto-BugKillers/
 │   ├── dashboard/                # Componentes do painel
 │   │   ├── Header.tsx            # Cabeçalho azul + toggle tema
 │   │   ├── Sidebar.tsx           # Menu lateral com navegação
-│   │   ├── DashboardLayout.tsx   # Wrapper de layout (legado)
 │   │   ├── UserProfileCard.tsx   # Card de perfil reutilizável
+│   │   ├── PhotoUploadModal.tsx  # [NOVO] Upload e ajuste de foto de perfil
+│   │   ├── ChangePasswordModal.tsx # [NOVO] Modal de troca de senha segura
+│   │   ├── TwoFactorModal.tsx    # [NOVO] Fluxo de ativação de 2FA
+│   │   ├── LogoutAllSessionsModal.tsx # [NOVO] Logout remoto em massa
+│   │   ├── NewIntegrationModal.tsx  # [NOVO] Adicionar novas ferramentas
+│   │   ├── IntegrationConfigModal.tsx # [NOVO] Configurações de API/Tokens
+│   │   ├── IntegrationDisconnectModal.tsx # [NOVO] Confirmação de desconexão
+│   │   ├── IntegrationNotifyModal.tsx # [NOVO] Lead capture para ferramentas "Em breve"
+│   │   ├── PlansCompareModal.tsx    # [NOVO] Tabela comparativa de planos
+│   │   ├── ManageSubscriptionModal.tsx # [NOVO] Gestão de assinatura ativa
+│   │   ├── UpdateCardModal.tsx      # [NOVO] Troca de método de pagamento
+│   │   ├── CancelSubscriptionModal.tsx # [NOVO] Fluxo de cancelamento
+│   │   ├── PauseSubscriptionModal.tsx # [NOVO] Pausa temporária de faturamento
 │   │   ├── DeleteAccountModal.tsx # Modal de confirmação de exclusão
 │   │   └── index.ts              # Exports centralizados
 │   │
@@ -141,10 +153,26 @@ Menu lateral com navegação automática:
 #### `UserProfileCard.tsx`
 Card de perfil reutilizável com:
 - Avatar do usuário com indicador de status
-- Botões de alterar/remover foto
-- Nome, email e badge do plano
-- Informações de membro desde e última atividade
-- Botão "Ver Perfil Público"
+- Integração com `PhotoUploadModal` para troca de foto
+- Badge dinâmico do plano e status de atividade (Online/Sempre Ativo)
+- Remoção do botão de perfil público para foco em gestão interna
+
+#### Modais de Segurança
+- **`ChangePasswordModal.tsx`**: Validação de força de senha em tempo real e confirmação.
+- **`TwoFactorModal.tsx`**: Fluxo em 3 etapas (Setup QR, Verificação, Códigos de Backup).
+- **`LogoutAllSessionsModal.tsx`**: Encerramento em massa de sessões remotas com feedback.
+
+#### Modais de Integrações
+- **`NewIntegrationModal.tsx`**: Galeria para novas conexões.
+- **`IntegrationConfigModal.tsx`**: Gestão de instâncias e tokens.
+- **`IntegrationDisconnectModal.tsx`**: Segurança ao remover conexões.
+- **`IntegrationNotifyModal.tsx`**: Sistema de notificação para features pendentes.
+
+#### Modais de Faturamento (Billing)
+- **`PlansCompareModal.tsx`**: Visualização lado a lado de benefícios.
+- **`ManageSubscriptionModal.tsx`**: Hub de gestão do plano atual.
+- **`UpdateCardModal.tsx`**: Interface para novos dados de pagamento.
+- **`CancelSubscriptionModal.tsx` & `PauseSubscriptionModal.tsx`**: Retenção e gestão de churn.
 
 #### `DeleteAccountModal.tsx`
 Modal de confirmação crítica com:
@@ -157,14 +185,14 @@ Modal de confirmação crítica com:
 
 ### Páginas
 
-| Rota | Página | Descrição |
-|------|--------|----------|
-| `/profile` | Dados Pessoais | Formulário de perfil, assinatura, visão de uso |
-| `/billing` | Plano & Faturamento | Plano atual, comparação de planos, faturas |
-| `/usage` | Uso & Limites | Consumo mensal, economia estimada, histórico |
-| `/integrations` | Integrações | Cards de ferramentas (Jira, Azure, Slack, Postman) |
-| `/settings` | Preferências | Tema, idioma, notificações push e email |
-| `/security` | Segurança | Senha, 2FA, sessões ativas, alertas, zona de perigo |
+| Rota | Página | Status | Descrição |
+|------|--------|--------|----------|
+| `/profile` | Dados Pessoais | ✅ Funcional | Perfil controlado, upload de foto e assinatura limpa |
+| `/billing` | Plano & Faturamento | ✅ Funcional | Gestão completa de planos e faturas via modais |
+| `/usage` | Uso & Limites | ✅ Funcional | Consumo mensal e histórico de economia |
+| `/integrations` | Integrações | ✅ Funcional | Interface de conexão com Jira, Azure e Slack |
+| `/settings` | Preferências | ✅ Funcional | Temas (Light/Dark), idiomas e notificações |
+| `/security` | Segurança | ✅ Funcional | Segurança avançada, 2FA e gestão de sessões |
 
 ---
 

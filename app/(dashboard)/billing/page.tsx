@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
     Download,
     CheckCircle,
@@ -8,9 +9,20 @@ import {
     Copy,
 } from "lucide-react";
 import { UserProfileCard } from "@/components/dashboard/UserProfileCard";
+import { PlansCompareModal } from "@/components/dashboard/PlansCompareModal";
+import { ManageSubscriptionModal } from "@/components/dashboard/ManageSubscriptionModal";
+import { UpdateCardModal } from "@/components/dashboard/UpdateCardModal";
+import { CancelSubscriptionModal } from "@/components/dashboard/CancelSubscriptionModal";
+import { PauseSubscriptionModal } from "@/components/dashboard/PauseSubscriptionModal";
 import Link from "next/link";
 
 export default function BillingPage() {
+    const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+    const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+    const [isUpdateCardModalOpen, setIsUpdateCardModalOpen] = useState(false);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
+
     return (
         <div className="max-w-5xl mx-auto flex flex-col gap-6">
             {/* Profile Card */}
@@ -80,10 +92,16 @@ export default function BillingPage() {
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                            <button className="flex-1 px-5 py-2.5 rounded-xl border border-primary text-primary hover:bg-primary/5 text-sm font-semibold transition-colors">
+                            <button 
+                                onClick={() => setIsCompareModalOpen(true)}
+                                className="flex-1 px-5 py-2.5 rounded-xl border border-primary text-primary hover:bg-primary/5 text-sm font-semibold transition-colors"
+                            >
                                 Comparar Planos
                             </button>
-                            <button className="flex-1 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 text-sm font-semibold shadow-lg transition-colors">
+                            <button 
+                                onClick={() => setIsManageModalOpen(true)}
+                                className="flex-1 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 text-sm font-semibold shadow-lg transition-colors"
+                            >
                                 Gerenciar
                             </button>
                         </div>
@@ -243,7 +261,10 @@ export default function BillingPage() {
                                 <p className="text-xs text-slate-500">Expira em 12/2028</p>
                             </div>
                         </div>
-                        <button className="w-full py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        <button 
+                            onClick={() => setIsUpdateCardModalOpen(true)}
+                            className="w-full py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        >
                             Alterar Cartão
                         </button>
                     </div>
@@ -282,19 +303,19 @@ export default function BillingPage() {
 
             {/* Footer Links */}
             <div className="flex justify-center gap-6 mt-4">
-                <Link
-                    href="#"
+                <button
+                    onClick={() => setIsPauseModalOpen(true)}
                     className="text-sm text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors"
                 >
                     Pausar assinatura
-                </Link>
+                </button>
                 <span className="text-slate-300 dark:text-slate-700">•</span>
-                <Link
-                    href="#"
+                <button
+                    onClick={() => setIsCancelModalOpen(true)}
                     className="text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
                 >
                     Cancelar assinatura
-                </Link>
+                </button>
             </div>
 
             {/* Footer */}
@@ -303,6 +324,32 @@ export default function BillingPage() {
                     © 2026 BugKillers AI. All rights reserved.
                 </p>
             </footer>
+
+            {/* Modals */}
+            <PlansCompareModal
+                isOpen={isCompareModalOpen}
+                onClose={() => setIsCompareModalOpen(false)}
+            />
+            <ManageSubscriptionModal
+                isOpen={isManageModalOpen}
+                onClose={() => setIsManageModalOpen(false)}
+                onChangePlan={() => setIsCompareModalOpen(true)}
+                onUpdateCard={() => setIsUpdateCardModalOpen(true)}
+                onPause={() => setIsPauseModalOpen(true)}
+                onCancel={() => setIsCancelModalOpen(true)}
+            />
+            <UpdateCardModal
+                isOpen={isUpdateCardModalOpen}
+                onClose={() => setIsUpdateCardModalOpen(false)}
+            />
+            <CancelSubscriptionModal
+                isOpen={isCancelModalOpen}
+                onClose={() => setIsCancelModalOpen(false)}
+            />
+            <PauseSubscriptionModal
+                isOpen={isPauseModalOpen}
+                onClose={() => setIsPauseModalOpen(false)}
+            />
         </div>
     );
 }
