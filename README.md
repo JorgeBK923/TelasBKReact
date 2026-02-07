@@ -8,6 +8,8 @@ Plataforma web desenvolvida com **Next.js 16**, **React 19** e **Tailwind CSS 4*
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Como Executar](#-como-executar)
 - [Componentes](#-componentes)
+- [Gerenciamento de Estado](#-gerenciamento-de-estado)
+- [Rotas e Páginas](#-rotas-e-páginas)
 - [Temas Light/Dark](#-temas-lightdark)
 - [Cores Customizadas](#-cores-customizadas)
 
@@ -32,24 +34,29 @@ Plataforma web desenvolvida com **Next.js 16**, **React 19** e **Tailwind CSS 4*
 Projeto-BugKillers/
 ├── app/                          # App Router do Next.js
 │   ├── (dashboard)/              # Grupo de rotas do Dashboard
-│   │   ├── layout.tsx            # Layout compartilhado (Header + Sidebar)
-│   │   ├── profile/              # Página de Dados Pessoais
-│   │   │   └── page.tsx
-│   │   ├── billing/              # Página de Plano & Faturamento
-│   │   │   └── page.tsx
-│   │   ├── usage/                # Página de Uso & Limites
-│   │   │   └── page.tsx
-│   │   ├── integrations/         # Página de Integrações
-│   │   │   └── page.tsx
-│   │   ├── settings/             # Página de Preferências
-│   │   │   └── page.tsx
-│   │   └── security/             # Página de Segurança
-│   │       └── page.tsx
-│   ├── (website)/                # Grupo de rotas do site público
-│   │   └── page.tsx              # Landing page
-│   ├── globals.css               # Estilos globais + Tailwind
-│   ├── layout.tsx                # Layout raiz da aplicação
-│   └── favicon.ico
+│   ├── (agents)/                 # Seleção de Agentes [NOVO]
+│   │   └── agents/               # Galeria de Agentes
+│   ├── (auth)/                   # Grupo de autenticação [REFATORADO]
+│   │   └── login/                # Página de Login com Tema Dinâmico
+│   ├── (dashboard)/              # Grupo de rotas do Dashboard
+│   │   ├── layout.tsx            # Layout com Header reativo
+│   │   └── ...                   # Páginas de perfil, billing, etc
+│   ├── (workspace)/              # Área de chat e trabalho [NOVO]
+│   │   ├── layout.tsx            # Sidebar azul dedicada
+│   │   └── chat/                 # Ambiente de Chat IA
+│   ├── globals.css               # Estilos globais v4
+│   └── layout.tsx                # Root layout (Provider Wrapper)
+│
+├── components/                   # Componentes reutilizáveis
+│   ├── dashboard/                # Header, Sidebar, ProfileMenu
+│   ├── agents/                   # AgentCard, FilterBar [NOVO]
+│   ├── chat/                     # ChatSidebar, ChatWindow, MessageBubble [NOVO]
+│   └── auth/                     # LoginForm, SocialButtons
+│
+├── context/                      # UserContext (Estado Global) [NOVO]
+├── constants/                    # user.ts (Dados Iniciais) [NOVO]
+├── public/                       # Arquivos estáticos
+└── ...
 │
 ├── components/                   # Componentes reutilizáveis
 │   ├── dashboard/                # Componentes do painel
@@ -134,28 +141,44 @@ npm start
 
 ## 🧩 Componentes
 
-### Dashboard
+### Dashboard (Gestão)
 
-#### `Header.tsx`
-Cabeçalho principal com:
-- Logo BugKillers (ícone de bug)
-- Toggle de tema (light/dark)
-- Avatar do usuário com status online
-- Fundo azul vibrante (#0033ff)
-
-#### `Sidebar.tsx`
-Menu lateral com navegação automática:
-- **Seção "Conta"**: Dados, Plano, Uso
-- **Seção "Sistema"**: Integrações, Preferências, Segurança
-- Indicador de página ativa (borda azul lateral)
-- Usa `usePathname()` para detectar a rota ativa automaticamente
+#### `Header.tsx` & `ProfileMenu.tsx`
+Interface de cabeçalho inteligente:
+- **Dados Reativos**: Nome e avatar sincronizados via `UserContext`.
+- **Menu Dropdown**: Acesso rápido a configurações e logout (com estados de loading).
+- **Tema**: Toggle otimizado entre modo claro e escuro.
 
 #### `UserProfileCard.tsx`
-Card de perfil reutilizável com:
-- Avatar do usuário com indicador de status
-- Integração com `PhotoUploadModal` para troca de foto
-- Badge dinâmico do plano e status de atividade (Online/Sempre Ativo)
-- Remoção do botão de perfil público para foco em gestão interna
+Componente central de gestão de perfil:
+- **Upload de Avatar**: Integrado ao `PhotoUploadModal`.
+- **Sincronização Global**: Atualiza instantaneamente o cabeçalho e as conversas.
+
+### 🤖 Agentes (Seleção) [NOVO]
+
+#### `AgentCard.tsx`
+Cartões informativos sobre os agentes de IA:
+- **Status**: Indicadores visuais de Online/Manutenção.
+- **Labels**: Versão, Tags e Prioridade.
+
+#### `FilterBar.tsx`
+Sistema de busca e filtragem:
+- Busca por nome e filtros por categoria de teste.
+
+### 💬 Workspace (Chat) [NOVO]
+
+#### `ChatSidebar.tsx`
+Histórico de conversas inteligente e perfil do usuário:
+- **Sincronização**: Exibe os dados do usuário atualizados.
+- **Navegação**: Agrupamento por períodos (Hoje, Esta Semana).
+
+#### `MessageBubble.tsx`
+Interface de conversa premium:
+- **Markdown & Código**: Suporte a blocos de código com sintaxe destacada.
+- **Identidade**: Mostra o avatar do usuário atual em tempo real.
+
+#### `ChatWindow.tsx`
+Interface de chat fluida com suporte a inputs de texto e áreas de visualização de mensagens otimizadas.
 
 #### Modais de Segurança
 - **`ChangePasswordModal.tsx`**: Validação de força de senha em tempo real e confirmação.
@@ -185,14 +208,32 @@ Modal de confirmação crítica com:
 
 ### Páginas
 
-| Rota | Página | Status | Descrição |
-|------|--------|--------|----------|
-| `/profile` | Dados Pessoais | ✅ Funcional | Perfil controlado, upload de foto e assinatura limpa |
-| `/billing` | Plano & Faturamento | ✅ Funcional | Gestão completa de planos e faturas via modais |
-| `/usage` | Uso & Limites | ✅ Funcional | Consumo mensal e histórico de economia |
-| `/integrations` | Integrações | ✅ Funcional | Interface de conexão com Jira, Azure e Slack |
-| `/settings` | Preferências | ✅ Funcional | Temas (Light/Dark), idiomas e notificações |
-| `/security` | Segurança | ✅ Funcional | Segurança avançada, 2FA e gestão de sessões |
+---
+
+## 🛣️ Rotas e Páginas [NOVO]
+
+| Rota | Descrição | Status |
+|------|-----------|--------|
+| `/login` | Login com suporte a tema adaptativo | ✅ Completo |
+| `/agents` | Seleção de Agentes especializados | ✅ Completo |
+| `/chat` | Área de trabalho (Workspace) | ✅ Completo |
+| `/profile` | Edição de perfil e sincronização global | ✅ Completo |
+| `/billing` | Planos, Modais e Faturamento | ✅ Completo |
+| `/security` | Segurança, 2FA e Senha | ✅ Completo |
+
+---
+
+---
+
+## 🧠 Gerenciamento de Estado
+
+Implementamos uma camada de estado global para garantir a **Consistência de Dados** em toda a aplicação.
+
+### UserContext
+Localizado em `context/UserContext.tsx`, este provider gerencia:
+- **Dados do Usuário**: Nome, email, cargo e avatar.
+- **Sincronização**: Qualquer alteração no perfil reflete instantaneamente no Header, Sidebar e Chat.
+- **Persistência**: Integração com `localStorage` para manter as preferências do usuário entre sessões.
 
 ---
 
@@ -202,17 +243,11 @@ O projeto usa `next-themes` para gerenciar os temas.
 
 ### Como funciona
 
-1. **ThemeProvider** em `providers/ThemeProvider.tsx` envolve a aplicação
-2. **Hook `useTheme()`** usado no Header para toggle
-3. **Classe `.dark`** adicionada ao `<html>` automaticamente
-4. **Tailwind** usa variante `dark:` para estilos alternativos
+1. **ThemeProvider** em `providers/ThemeProvider.tsx` envolve a aplicação (integrado ao `UserProvider`).
+2. **Hook `useTheme()`** usado no Header e na Página de Login para toggle.
+3. **Página de Login**: Totalmente refatorada para suportar transições de tema (overlay, backgrounds e backgrounds de containers dinâmicos).
+4. **Tailwind** usa variante `dark:` para estilos alternativos.
 
-### Configuração no CSS
-
-```css
-/* globals.css */
-@custom-variant dark (&:where(.dark, .dark *));
-```
 
 ---
 

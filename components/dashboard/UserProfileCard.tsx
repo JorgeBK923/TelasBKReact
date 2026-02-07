@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import { Calendar, Clock, AlertTriangle } from "lucide-react";
 import { PhotoUploadModal } from "@/components/dashboard/PhotoUploadModal";
 import { formatDistanceToNow, getLastActivity, updateLastActivity } from "@/utils/date";
+import { useUser } from "@/context/UserContext";
 
 export function UserProfileCard() {
     const pathname = usePathname();
+    const { user, updateAvatar } = useUser();
 
     // Check if we are on the profile data page (either /profile or /profile/data)
     // Adjust this logic if your profile root is different, based on user request it is /profile or /profile/data
@@ -20,16 +22,8 @@ export function UserProfileCard() {
     // Placeholder image
     const placeholderImage = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
 
-    // State for the profile image
-    const [profileImage, setProfileImage] = useState("https://lh3.googleusercontent.com/aida-public/AB6AXuBrzo0FcvIunHSpnEoPZ8JbTeyUACHHixGsutFCzHk5sHWyA9u5blbx8Dz6Nn9tZcU9w3rnrU0pYXoLtsXxhHW3zJT7wW1IVym5fOKisUZwh4M-ppc3f7RHZlsufb5BjepVXMn08hUkUPSqSmRXNru5FyUi6feECZjTv-ML92XcvkSojBtITpKIDnrNxj0n5TUiGN4R8SghPXOjrN7pJlklAUEjISeh7l8lgs7Hu54swag2xMgJJVujvL8DbqZsMAq6zeFtwzDeCLI");
-
     // Load from localStorage on mount and update last activity
     useEffect(() => {
-        const savedImage = localStorage.getItem('user_profile_image');
-        if (savedImage) {
-            setProfileImage(savedImage);
-        }
-
         // Update and display last activity
         updateLastActivity();
         const lastActivity = getLastActivity();
@@ -54,15 +48,13 @@ export function UserProfileCard() {
     };
 
     const handleConfirmRemove = () => {
-        setProfileImage(placeholderImage);
-        localStorage.setItem('user_profile_image', placeholderImage);
+        updateAvatar(placeholderImage);
         setIsRemoveModalOpen(false);
         console.log("Foto removida");
     };
 
     const handleSavePhoto = (newImageUrl: string) => {
-        setProfileImage(newImageUrl);
-        localStorage.setItem('user_profile_image', newImageUrl);
+        updateAvatar(newImageUrl);
     };
 
     return (
@@ -74,7 +66,7 @@ export function UserProfileCard() {
                             <div
                                 className="size-20 rounded-full bg-cover bg-center ring-4 ring-slate-50 dark:ring-white/5"
                                 style={{
-                                    backgroundImage: `url('${profileImage}')`,
+                                    backgroundImage: `url('${user.avatarUrl}')`,
                                 }}
                                 aria-label="Foto de perfil de Ricardo Dev"
                             />
@@ -109,14 +101,14 @@ export function UserProfileCard() {
                     <div className="flex flex-col mt-1">
                         <div className="flex items-center gap-3 flex-wrap mb-1">
                             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                                Ricardo Dev
+                                {user.name}
                             </h2>
                             <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wide">
-                                Plano Enterprise
+                                {user.plan}
                             </span>
                         </div>
                         <p className="text-slate-500 dark:text-slate-400">
-                            ricardo@bugkillers.ai
+                            {user.email}
                         </p>
                         <div className="flex flex-col gap-1 mt-3">
                             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
@@ -136,7 +128,7 @@ export function UserProfileCard() {
             <PhotoUploadModal
                 isOpen={isUploadModalOpen}
                 onClose={() => setIsUploadModalOpen(false)}
-                currentImage={profileImage}
+                currentImage={user.avatarUrl}
                 onSave={handleSavePhoto}
             />
 

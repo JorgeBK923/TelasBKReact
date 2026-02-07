@@ -13,13 +13,17 @@ import {
     RefreshCw,
 } from "lucide-react";
 
+import { useUser } from "@/context/UserContext";
+
 export default function ProfilePage() {
+    const { user } = useUser();
+
     const initialData = {
-        nome: "Ricardo Dev",
-        email: "ricardo@bugkillers.ai",
-        empresa: "BugKillers Inc.",
-        cargo: "CTO & Co-Founder",
-        telefone: "+55 11 99999-9999",
+        nome: user.name,
+        email: user.email,
+        empresa: user.company,
+        cargo: user.role,
+        telefone: user.phone,
     };
 
     const [formData, setFormData] = useState(initialData);
@@ -107,9 +111,8 @@ export default function ProfilePage() {
                             Nome Completo
                         </label>
                         <input
-                            className={`w-full h-12 px-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
-                                errors.nome ? "border-red-500" : "border-slate-200 dark:border-slate-700"
-                            }`}
+                            className={`w-full h-12 px-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${errors.nome ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                                }`}
                             type="text"
                             value={formData.nome}
                             onChange={(e) => handleChange("nome", e.target.value)}
@@ -125,9 +128,8 @@ export default function ProfilePage() {
                         <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-5" />
                             <input
-                                className={`w-full h-12 pl-10 pr-10 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
-                                    errors.email ? "border-red-500" : "border-slate-200 dark:border-slate-700"
-                                }`}
+                                className={`w-full h-12 pl-10 pr-10 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${errors.email ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                                    }`}
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => handleChange("email", e.target.value)}
@@ -152,9 +154,8 @@ export default function ProfilePage() {
                         <div className="relative">
                             <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-5" />
                             <input
-                                className={`w-full h-12 pl-10 pr-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
-                                    errors.empresa ? "border-red-500" : "border-slate-200 dark:border-slate-700"
-                                }`}
+                                className={`w-full h-12 pl-10 pr-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${errors.empresa ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                                    }`}
                                 type="text"
                                 value={formData.empresa}
                                 onChange={(e) => handleChange("empresa", e.target.value)}
@@ -182,9 +183,8 @@ export default function ProfilePage() {
                         <div className="relative">
                             <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-5" />
                             <input
-                                className={`w-full h-12 pl-10 pr-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${
-                                    errors.telefone ? "border-red-500" : "border-slate-200 dark:border-slate-700"
-                                }`}
+                                className={`w-full h-12 pl-10 pr-4 rounded-xl border bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 transition-all outline-none ${errors.telefone ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                                    }`}
                                 type="tel"
                                 value={formData.telefone}
                                 onChange={(e) => handleChange("telefone", e.target.value)}

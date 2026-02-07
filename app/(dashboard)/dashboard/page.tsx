@@ -14,7 +14,7 @@ import Link from "next/link";
 
 export default function DashboardPage() {
     return (
-        <DashboardLayout activePage="uso">
+        <DashboardLayout>
             {/* Mobile Navigation Pills */}
             <div className="md:hidden flex overflow-x-auto pb-2 gap-2 no-scrollbar mb-6 -mx-4 px-4">
                 <Link

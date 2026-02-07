@@ -3,6 +3,7 @@
 import { Bug, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { ProfileMenu } from "./ProfileMenu";
 
 export function Header() {
     const { theme, setTheme } = useTheme();
@@ -43,20 +44,7 @@ export function Header() {
                     )}
                 </button>
                 <div className="h-8 w-[1px] bg-white/20 dark:bg-white/10"></div>
-                <div className="flex items-center gap-3 cursor-pointer">
-                    <div className="relative">
-                        <div
-                            className="size-9 rounded-full bg-cover bg-center border-2 border-white/30 dark:border-white/10 shadow-sm"
-                            style={{
-                                backgroundImage:
-                                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDUaP6h1-QAx14fZulD0gmZpcE5tBE_cCO_eZzXnb3utyw7O7nrHiQfQXmMUvnjfFbS8V-vGEMBE8-4BQ4smsOh0WYKExzBXa6-HFINUz8PNPvQjqFH5BVh-j1jb1Nkwn0ZxFImqfkcgotWkqj8k_7uV3di_d9x0NjKVqfUXOIeO7gU5giKmPt6kojOXrsDs7gOLWNeaTGV7RlCsOJFFDbolz7O6Ev8yVLaENQv0gShTMhSyPWIGdK6L6-lhWlq8N6U3jq4ciGFd2U')",
-                            }}
-                            aria-label="Portrait of Ricardo Dev user"
-                        >
-                            <div className="bg-green-500 size-2.5 border border-primary dark:border-card-dark rounded-full absolute bottom-0 right-0 transform translate-y-1/4 translate-x-1/4"></div>
-                        </div>
-                    </div>
-                </div>
+                <ProfileMenu />
             </div>
         </header>
     );

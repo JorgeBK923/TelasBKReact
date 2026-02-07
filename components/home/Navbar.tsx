@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Bug, Sun, Moon } from 'lucide-react';
@@ -49,8 +50,8 @@ export function Navbar() {
                         onClick={toggleTheme}
                     >
                         <div className={`absolute left-0.5 top-0.5 w-5 h-5 rounded-full transition-all duration-300 flex items-center justify-center shadow-sm ${mounted && isDark
-                                ? 'translate-x-4 bg-slate-900'
-                                : 'translate-x-0 bg-yellow-400'
+                            ? 'translate-x-4 bg-slate-900'
+                            : 'translate-x-0 bg-yellow-400'
                             }`}>
                             {mounted && (
                                 isDark ? (
@@ -62,9 +63,9 @@ export function Navbar() {
                         </div>
                     </button>
 
-                    <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="#login">
+                    <Link className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="/login">
                         Login
-                    </a>
+                    </Link>
                 </div>
 
                 <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2 rounded-lg transition-colors shadow-lg shadow-blue-600/20">
