@@ -1,0 +1,925 @@
+﻿[
+    {
+        "annotations":  {
+                            "destructiveHint":  true,
+                            "idempotentHint":  false,
+                            "openWorldHint":  false,
+                            "readOnlyHint":  false
+                        },
+        "description":  "Creates a new Stitch project. A project is a container for UI designs and frontend code.\n",
+        "inputSchema":  {
+                            "description":  "Request message for CreateProject.",
+                            "properties":  {
+                                               "title":  {
+                                                             "description":  "Optional. The title of the project.",
+                                                             "type":  "string"
+                                                         }
+                                           },
+                            "type":  "object"
+                        },
+        "name":  "create_project",
+        "outputSchema":  {
+                             "$defs":  {
+                                           "DesignTheme":  {
+                                                               "description":  "The theme of the design.",
+                                                               "properties":  {
+                                                                                  "backgroundDark":  "@{description=Optional. The background color for dark mode (hex format, e.g., \"#1a1a1a\").; type=string}",
+                                                                                  "backgroundLight":  "@{description=Optional. The background color for light mode (hex format, e.g., \"#f8f8f8\").; type=string}",
+                                                                                  "colorMode":  "@{description=Optional. The mode of appearance of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "customColor":  "@{description=Optional. A custom theme primary color.; type=string}",
+                                                                                  "description":  "@{description=Optional. A brief description of the theme aesthetic.; type=string}",
+                                                                                  "font":  "@{description=Optional. The font of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "preset":  "@{description=Optional. The preset color of the design.; type=string}",
+                                                                                  "roundness":  "@{description=Optional. The roundness of the design.; enum=System.Object[]; type=string; x-google-enum-deprecated=System.Object[]; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "saturation":  "@{description=Optional. The saturation of the design between 1 and 4.; format=int32; type=integer}"
+                                                                              },
+                                                               "type":  "object"
+                                                           },
+                                           "File":  {
+                                                        "description":  "A File resource.",
+                                                        "properties":  {
+                                                                           "downloadUrl":  "@{description=Optional. The URL of the file for download. For image files, this would be FIFE base URLs.; type=string}",
+                                                                           "fileContent":  "@{description=Optional. Input only. Specifies the raw file content for a direct upload.; format=byte; type=string; writeOnly=True}",
+                                                                           "mimeType":  "@{description=Optional. The mime type of the file. E.g. \"image/png\", \"text/html\".; type=string}",
+                                                                           "name":  "@{description=Identifier. The resource name of the file. Format: projects/{project}/files/{file}; type=string; x-google-identifier=True}",
+                                                                           "uploadBlobId":  "@{description=Optional. The BlobId from Scotty/contrib service file upload. This points to a temporary blobstore location of the file.; type=string}",
+                                                                           "userFeedback":  "@{$ref=#/$defs/UserFeedback; description=Output only. The latest feedback submitted for the file.; readOnly=True}"
+                                                                       },
+                                                        "type":  "object"
+                                                    },
+                                           "ProjectMetadata":  {
+                                                                   "description":  "Metadata relating to the project.",
+                                                                   "properties":  {
+                                                                                      "isRemixed":  "@{description=Whether this project was remixed or not. This allows the frontend to avoid polling for sessions since none will exist for a remixed project.; type=boolean}",
+                                                                                      "userRole":  "@{description=The Role of the user accessing the project.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                                  },
+                                                                   "type":  "object"
+                                                               },
+                                           "ScreenInstance":  {
+                                                                  "description":  "An instance of a screen on the project.",
+                                                                  "properties":  {
+                                                                                     "groupId":  "@{description=Optional. Group identifier for Genie Agent output grouping. Screens with the same groupId are rendered and interact as a group.; type=string}",
+                                                                                     "groupName":  "@{description=Optional. Human-readable name for the group (e.g., \"Warm Minimalism\", \"Ethereal Glow\").; type=string}",
+                                                                                     "height":  "@{description=Optional. The screen height.; format=int32; type=integer}",
+                                                                                     "hidden":  "@{description=Optional. User driven action hiding screen from the canvas.; type=boolean}",
+                                                                                     "id":  "@{description=Optional. The screen instance id.; type=string}",
+                                                                                     "label":  "@{description=Optional. The screen label.; type=string}",
+                                                                                     "sourceScreen":  "@{description=Optional. The resource name of the source screen. Format: projects/{project}/screens/{screen}; type=string}",
+                                                                                     "variantScreenInstance":  "@{$ref=#/$defs/ScreenInstance; description=Optional. The variant Screen Instance.}",
+                                                                                     "width":  "@{description=Optional. The screen width.; format=int32; type=integer}",
+                                                                                     "x":  "@{description=Optional. The x position of the screen.; format=int32; type=integer}",
+                                                                                     "y":  "@{description=Optional. The y position of the screen.; format=int32; type=integer}"
+                                                                                 },
+                                                                  "type":  "object"
+                                                              },
+                                           "UserFeedback":  {
+                                                                "description":  "User feedback for a given interaction.",
+                                                                "properties":  {
+                                                                                   "comment":  "@{description=Optional. Additional comment for the rating.; type=string}",
+                                                                                   "designFeedbackReason":  "@{description=Optional. The reason for the feedback for a design, if the rating is negative.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                   "rating":  "@{description=Optional. The user rating of the interaction.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                               },
+                                                                "type":  "object"
+                                                            }
+                                       },
+                             "description":  "A project is a single app.",
+                             "properties":  {
+                                                "backgroundTheme":  {
+                                                                        "description":  "Optional. The background theme of the project.",
+                                                                        "type":  "string"
+                                                                    },
+                                                "createTime":  {
+                                                                   "description":  "Output only. The time when the project was created.",
+                                                                   "format":  "date-time",
+                                                                   "readOnly":  true,
+                                                                   "type":  "string"
+                                                               },
+                                                "designTheme":  {
+                                                                    "$ref":  "#/$defs/DesignTheme",
+                                                                    "description":  "Output only. The theme used to generate the first design in the project.",
+                                                                    "readOnly":  true
+                                                                },
+                                                "deviceType":  {
+                                                                   "description":  "Output only. The device type of the project.",
+                                                                   "enum":  [
+                                                                                "DEVICE_TYPE_UNSPECIFIED",
+                                                                                "MOBILE",
+                                                                                "DESKTOP",
+                                                                                "TABLET",
+                                                                                "AGNOSTIC"
+                                                                            ],
+                                                                   "readOnly":  true,
+                                                                   "type":  "string",
+                                                                   "x-google-enum-descriptions":  [
+                                                                                                      "Unspecified device type.",
+                                                                                                      "A design for a mobile device.",
+                                                                                                      "A design for a desktop device.",
+                                                                                                      "A design for a tablet device.",
+                                                                                                      "A design that is not tied to a specific device."
+                                                                                                  ]
+                                                               },
+                                                "metadata":  {
+                                                                 "$ref":  "#/$defs/ProjectMetadata",
+                                                                 "description":  "Metadata of the project."
+                                                             },
+                                                "name":  {
+                                                             "description":  "Identifier. The resource name of the project. Format: projects/{project}",
+                                                             "type":  "string",
+                                                             "x-google-identifier":  true
+                                                         },
+                                                "origin":  {
+                                                               "description":  "Output only. The origin of the project.",
+                                                               "enum":  [
+                                                                            "ORIGIN_UNSPECIFIED",
+                                                                            "STITCH",
+                                                                            "IMPORTED_FROM_GALILEO"
+                                                                        ],
+                                                               "readOnly":  true,
+                                                               "type":  "string",
+                                                               "x-google-enum-descriptions":  [
+                                                                                                  "Unspecified origin. By default, the project is created from Stitch.",
+                                                                                                  "The project is created from Stitch.",
+                                                                                                  "The project is imported from Galileo."
+                                                                                              ]
+                                                           },
+                                                "projectType":  {
+                                                                    "description":  "Optional. The type of the project. If not specified, the project is a text to UI project.",
+                                                                    "enum":  [
+                                                                                 "PROJECT_TYPE_UNSPECIFIED",
+                                                                                 "TEXT_TO_UI",
+                                                                                 "TEXT_TO_UI_PRO",
+                                                                                 "TEXT_TO_UI_PRO_IMAGE_SPACE",
+                                                                                 "IMAGE_TO_UI",
+                                                                                 "IMAGE_TO_UI_PRO",
+                                                                                 "PROJECT_DESIGN"
+                                                                             ],
+                                                                    "type":  "string",
+                                                                    "x-google-enum-descriptions":  [
+                                                                                                       "Unspecified project type. By default, the project is a text to UI project.",
+                                                                                                       "A text to UI project.",
+                                                                                                       "Pro version of text to UI project.",
+                                                                                                       "Deprecated. Pro version of text to UI project using image space for edits.",
+                                                                                                       "An image to UI project.",
+                                                                                                       "Deprecated.",
+                                                                                                       "A new design project."
+                                                                                                   ]
+                                                                },
+                                                "readTime":  {
+                                                                 "description":  "Output only. The time the project was last read. Populated only when listing recently viewed projects.",
+                                                                 "format":  "date-time",
+                                                                 "readOnly":  true,
+                                                                 "type":  "string"
+                                                             },
+                                                "screenInstances":  {
+                                                                        "description":  "Output only. The screen instances on this project.",
+                                                                        "items":  {
+                                                                                      "$ref":  "#/$defs/ScreenInstance"
+                                                                                  },
+                                                                        "readOnly":  true,
+                                                                        "type":  "array"
+                                                                    },
+                                                "thumbnailScreenshot":  {
+                                                                            "$ref":  "#/$defs/File",
+                                                                            "description":  "Optional. The screenshot to be used as the thumbnail for the project. Same as normal design screenshots, this contains the FIFE serving_base_url which requires additional FIFE URL options to be set for sizing."
+                                                                        },
+                                                "title":  {
+                                                              "description":  "Optional. The title of the project.",
+                                                              "type":  "string"
+                                                          },
+                                                "updateTime":  {
+                                                                   "description":  "Output only. The time when the project was last updated.",
+                                                                   "format":  "date-time",
+                                                                   "readOnly":  true,
+                                                                   "type":  "string"
+                                                               },
+                                                "visibility":  {
+                                                                   "description":  "Optional. The visibility setting of the project.",
+                                                                   "enum":  [
+                                                                                "VISIBILITY_UNSPECIFIED",
+                                                                                "PUBLIC",
+                                                                                "PRIVATE"
+                                                                            ],
+                                                                   "type":  "string",
+                                                                   "x-google-enum-descriptions":  [
+                                                                                                      "Unspecified visibility. By default, the project is private.",
+                                                                                                      "The project is visible to all users, and may be featured in the feed.",
+                                                                                                      "The project is visible to only the creator."
+                                                                                                  ]
+                                                               }
+                                            },
+                             "type":  "object"
+                         }
+    },
+    {
+        "annotations":  {
+                            "destructiveHint":  false,
+                            "openWorldHint":  false,
+                            "readOnlyHint":  true
+                        },
+        "description":  "Retrieves the details of a specific Stitch project using its project name.\n",
+        "inputSchema":  {
+                            "description":  "Request message for GetProject.",
+                            "properties":  {
+                                               "name":  {
+                                                            "description":  "Required. Identifier. The resource name of the project to retrieve. Format: `projects/{project}` Example: `projects/4044680601076201931`",
+                                                            "type":  "string",
+                                                            "x-google-identifier":  true
+                                                        }
+                                           },
+                            "required":  [
+                                             "name"
+                                         ],
+                            "type":  "object"
+                        },
+        "name":  "get_project",
+        "outputSchema":  {
+                             "$defs":  {
+                                           "DesignTheme":  {
+                                                               "description":  "The theme of the design.",
+                                                               "properties":  {
+                                                                                  "backgroundDark":  "@{description=Optional. The background color for dark mode (hex format, e.g., \"#1a1a1a\").; type=string}",
+                                                                                  "backgroundLight":  "@{description=Optional. The background color for light mode (hex format, e.g., \"#f8f8f8\").; type=string}",
+                                                                                  "colorMode":  "@{description=Optional. The mode of appearance of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "customColor":  "@{description=Optional. A custom theme primary color.; type=string}",
+                                                                                  "description":  "@{description=Optional. A brief description of the theme aesthetic.; type=string}",
+                                                                                  "font":  "@{description=Optional. The font of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "preset":  "@{description=Optional. The preset color of the design.; type=string}",
+                                                                                  "roundness":  "@{description=Optional. The roundness of the design.; enum=System.Object[]; type=string; x-google-enum-deprecated=System.Object[]; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "saturation":  "@{description=Optional. The saturation of the design between 1 and 4.; format=int32; type=integer}"
+                                                                              },
+                                                               "type":  "object"
+                                                           },
+                                           "File":  {
+                                                        "description":  "A File resource.",
+                                                        "properties":  {
+                                                                           "downloadUrl":  "@{description=Optional. The URL of the file for download. For image files, this would be FIFE base URLs.; type=string}",
+                                                                           "fileContent":  "@{description=Optional. Input only. Specifies the raw file content for a direct upload.; format=byte; type=string; writeOnly=True}",
+                                                                           "mimeType":  "@{description=Optional. The mime type of the file. E.g. \"image/png\", \"text/html\".; type=string}",
+                                                                           "name":  "@{description=Identifier. The resource name of the file. Format: projects/{project}/files/{file}; type=string; x-google-identifier=True}",
+                                                                           "uploadBlobId":  "@{description=Optional. The BlobId from Scotty/contrib service file upload. This points to a temporary blobstore location of the file.; type=string}",
+                                                                           "userFeedback":  "@{$ref=#/$defs/UserFeedback; description=Output only. The latest feedback submitted for the file.; readOnly=True}"
+                                                                       },
+                                                        "type":  "object"
+                                                    },
+                                           "ProjectMetadata":  {
+                                                                   "description":  "Metadata relating to the project.",
+                                                                   "properties":  {
+                                                                                      "isRemixed":  "@{description=Whether this project was remixed or not. This allows the frontend to avoid polling for sessions since none will exist for a remixed project.; type=boolean}",
+                                                                                      "userRole":  "@{description=The Role of the user accessing the project.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                                  },
+                                                                   "type":  "object"
+                                                               },
+                                           "ScreenInstance":  {
+                                                                  "description":  "An instance of a screen on the project.",
+                                                                  "properties":  {
+                                                                                     "groupId":  "@{description=Optional. Group identifier for Genie Agent output grouping. Screens with the same groupId are rendered and interact as a group.; type=string}",
+                                                                                     "groupName":  "@{description=Optional. Human-readable name for the group (e.g., \"Warm Minimalism\", \"Ethereal Glow\").; type=string}",
+                                                                                     "height":  "@{description=Optional. The screen height.; format=int32; type=integer}",
+                                                                                     "hidden":  "@{description=Optional. User driven action hiding screen from the canvas.; type=boolean}",
+                                                                                     "id":  "@{description=Optional. The screen instance id.; type=string}",
+                                                                                     "label":  "@{description=Optional. The screen label.; type=string}",
+                                                                                     "sourceScreen":  "@{description=Optional. The resource name of the source screen. Format: projects/{project}/screens/{screen}; type=string}",
+                                                                                     "variantScreenInstance":  "@{$ref=#/$defs/ScreenInstance; description=Optional. The variant Screen Instance.}",
+                                                                                     "width":  "@{description=Optional. The screen width.; format=int32; type=integer}",
+                                                                                     "x":  "@{description=Optional. The x position of the screen.; format=int32; type=integer}",
+                                                                                     "y":  "@{description=Optional. The y position of the screen.; format=int32; type=integer}"
+                                                                                 },
+                                                                  "type":  "object"
+                                                              },
+                                           "UserFeedback":  {
+                                                                "description":  "User feedback for a given interaction.",
+                                                                "properties":  {
+                                                                                   "comment":  "@{description=Optional. Additional comment for the rating.; type=string}",
+                                                                                   "designFeedbackReason":  "@{description=Optional. The reason for the feedback for a design, if the rating is negative.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                   "rating":  "@{description=Optional. The user rating of the interaction.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                               },
+                                                                "type":  "object"
+                                                            }
+                                       },
+                             "description":  "A project is a single app.",
+                             "properties":  {
+                                                "backgroundTheme":  {
+                                                                        "description":  "Optional. The background theme of the project.",
+                                                                        "type":  "string"
+                                                                    },
+                                                "createTime":  {
+                                                                   "description":  "Output only. The time when the project was created.",
+                                                                   "format":  "date-time",
+                                                                   "readOnly":  true,
+                                                                   "type":  "string"
+                                                               },
+                                                "designTheme":  {
+                                                                    "$ref":  "#/$defs/DesignTheme",
+                                                                    "description":  "Output only. The theme used to generate the first design in the project.",
+                                                                    "readOnly":  true
+                                                                },
+                                                "deviceType":  {
+                                                                   "description":  "Output only. The device type of the project.",
+                                                                   "enum":  [
+                                                                                "DEVICE_TYPE_UNSPECIFIED",
+                                                                                "MOBILE",
+                                                                                "DESKTOP",
+                                                                                "TABLET",
+                                                                                "AGNOSTIC"
+                                                                            ],
+                                                                   "readOnly":  true,
+                                                                   "type":  "string",
+                                                                   "x-google-enum-descriptions":  [
+                                                                                                      "Unspecified device type.",
+                                                                                                      "A design for a mobile device.",
+                                                                                                      "A design for a desktop device.",
+                                                                                                      "A design for a tablet device.",
+                                                                                                      "A design that is not tied to a specific device."
+                                                                                                  ]
+                                                               },
+                                                "metadata":  {
+                                                                 "$ref":  "#/$defs/ProjectMetadata",
+                                                                 "description":  "Metadata of the project."
+                                                             },
+                                                "name":  {
+                                                             "description":  "Identifier. The resource name of the project. Format: projects/{project}",
+                                                             "type":  "string",
+                                                             "x-google-identifier":  true
+                                                         },
+                                                "origin":  {
+                                                               "description":  "Output only. The origin of the project.",
+                                                               "enum":  [
+                                                                            "ORIGIN_UNSPECIFIED",
+                                                                            "STITCH",
+                                                                            "IMPORTED_FROM_GALILEO"
+                                                                        ],
+                                                               "readOnly":  true,
+                                                               "type":  "string",
+                                                               "x-google-enum-descriptions":  [
+                                                                                                  "Unspecified origin. By default, the project is created from Stitch.",
+                                                                                                  "The project is created from Stitch.",
+                                                                                                  "The project is imported from Galileo."
+                                                                                              ]
+                                                           },
+                                                "projectType":  {
+                                                                    "description":  "Optional. The type of the project. If not specified, the project is a text to UI project.",
+                                                                    "enum":  [
+                                                                                 "PROJECT_TYPE_UNSPECIFIED",
+                                                                                 "TEXT_TO_UI",
+                                                                                 "TEXT_TO_UI_PRO",
+                                                                                 "TEXT_TO_UI_PRO_IMAGE_SPACE",
+                                                                                 "IMAGE_TO_UI",
+                                                                                 "IMAGE_TO_UI_PRO",
+                                                                                 "PROJECT_DESIGN"
+                                                                             ],
+                                                                    "type":  "string",
+                                                                    "x-google-enum-descriptions":  [
+                                                                                                       "Unspecified project type. By default, the project is a text to UI project.",
+                                                                                                       "A text to UI project.",
+                                                                                                       "Pro version of text to UI project.",
+                                                                                                       "Deprecated. Pro version of text to UI project using image space for edits.",
+                                                                                                       "An image to UI project.",
+                                                                                                       "Deprecated.",
+                                                                                                       "A new design project."
+                                                                                                   ]
+                                                                },
+                                                "readTime":  {
+                                                                 "description":  "Output only. The time the project was last read. Populated only when listing recently viewed projects.",
+                                                                 "format":  "date-time",
+                                                                 "readOnly":  true,
+                                                                 "type":  "string"
+                                                             },
+                                                "screenInstances":  {
+                                                                        "description":  "Output only. The screen instances on this project.",
+                                                                        "items":  {
+                                                                                      "$ref":  "#/$defs/ScreenInstance"
+                                                                                  },
+                                                                        "readOnly":  true,
+                                                                        "type":  "array"
+                                                                    },
+                                                "thumbnailScreenshot":  {
+                                                                            "$ref":  "#/$defs/File",
+                                                                            "description":  "Optional. The screenshot to be used as the thumbnail for the project. Same as normal design screenshots, this contains the FIFE serving_base_url which requires additional FIFE URL options to be set for sizing."
+                                                                        },
+                                                "title":  {
+                                                              "description":  "Optional. The title of the project.",
+                                                              "type":  "string"
+                                                          },
+                                                "updateTime":  {
+                                                                   "description":  "Output only. The time when the project was last updated.",
+                                                                   "format":  "date-time",
+                                                                   "readOnly":  true,
+                                                                   "type":  "string"
+                                                               },
+                                                "visibility":  {
+                                                                   "description":  "Optional. The visibility setting of the project.",
+                                                                   "enum":  [
+                                                                                "VISIBILITY_UNSPECIFIED",
+                                                                                "PUBLIC",
+                                                                                "PRIVATE"
+                                                                            ],
+                                                                   "type":  "string",
+                                                                   "x-google-enum-descriptions":  [
+                                                                                                      "Unspecified visibility. By default, the project is private.",
+                                                                                                      "The project is visible to all users, and may be featured in the feed.",
+                                                                                                      "The project is visible to only the creator."
+                                                                                                  ]
+                                                               }
+                                            },
+                             "type":  "object"
+                         }
+    },
+    {
+        "annotations":  {
+                            "openWorldHint":  false,
+                            "readOnlyHint":  true
+                        },
+        "description":  "Lists all Stitch projects accessible to the user. By default, it lists projects owned by the user.\n",
+        "inputSchema":  {
+                            "description":  "Request message for ListProjects.",
+                            "properties":  {
+                                               "filter":  {
+                                                              "description":  "Optional. A filter to apply to the list of projects, following a subset of AIP-160. This service supports filtering on the `view` field. Supported filters: * `view=owned`: Lists only projects owned by the user. This is the default behavior if no filter is specified. * `view=shared`: Lists only projects shared with the user. Example: `view=owned`",
+                                                              "type":  "string"
+                                                          }
+                                           },
+                            "type":  "object"
+                        },
+        "name":  "list_projects",
+        "outputSchema":  {
+                             "$defs":  {
+                                           "DesignTheme":  {
+                                                               "description":  "The theme of the design.",
+                                                               "properties":  {
+                                                                                  "backgroundDark":  "@{description=Optional. The background color for dark mode (hex format, e.g., \"#1a1a1a\").; type=string}",
+                                                                                  "backgroundLight":  "@{description=Optional. The background color for light mode (hex format, e.g., \"#f8f8f8\").; type=string}",
+                                                                                  "colorMode":  "@{description=Optional. The mode of appearance of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "customColor":  "@{description=Optional. A custom theme primary color.; type=string}",
+                                                                                  "description":  "@{description=Optional. A brief description of the theme aesthetic.; type=string}",
+                                                                                  "font":  "@{description=Optional. The font of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "preset":  "@{description=Optional. The preset color of the design.; type=string}",
+                                                                                  "roundness":  "@{description=Optional. The roundness of the design.; enum=System.Object[]; type=string; x-google-enum-deprecated=System.Object[]; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "saturation":  "@{description=Optional. The saturation of the design between 1 and 4.; format=int32; type=integer}"
+                                                                              },
+                                                               "type":  "object"
+                                                           },
+                                           "File":  {
+                                                        "description":  "A File resource.",
+                                                        "properties":  {
+                                                                           "downloadUrl":  "@{description=Optional. The URL of the file for download. For image files, this would be FIFE base URLs.; type=string}",
+                                                                           "fileContent":  "@{description=Optional. Input only. Specifies the raw file content for a direct upload.; format=byte; type=string; writeOnly=True}",
+                                                                           "mimeType":  "@{description=Optional. The mime type of the file. E.g. \"image/png\", \"text/html\".; type=string}",
+                                                                           "name":  "@{description=Identifier. The resource name of the file. Format: projects/{project}/files/{file}; type=string; x-google-identifier=True}",
+                                                                           "uploadBlobId":  "@{description=Optional. The BlobId from Scotty/contrib service file upload. This points to a temporary blobstore location of the file.; type=string}",
+                                                                           "userFeedback":  "@{$ref=#/$defs/UserFeedback; description=Output only. The latest feedback submitted for the file.; readOnly=True}"
+                                                                       },
+                                                        "type":  "object"
+                                                    },
+                                           "Project":  {
+                                                           "description":  "A project is a single app.",
+                                                           "properties":  {
+                                                                              "backgroundTheme":  "@{description=Optional. The background theme of the project.; type=string}",
+                                                                              "createTime":  "@{description=Output only. The time when the project was created.; format=date-time; readOnly=True; type=string}",
+                                                                              "designTheme":  "@{$ref=#/$defs/DesignTheme; description=Output only. The theme used to generate the first design in the project.; readOnly=True}",
+                                                                              "deviceType":  "@{description=Output only. The device type of the project.; enum=System.Object[]; readOnly=True; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                              "metadata":  "@{$ref=#/$defs/ProjectMetadata; description=Metadata of the project.}",
+                                                                              "name":  "@{description=Identifier. The resource name of the project. Format: projects/{project}; type=string; x-google-identifier=True}",
+                                                                              "origin":  "@{description=Output only. The origin of the project.; enum=System.Object[]; readOnly=True; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                              "projectType":  "@{description=Optional. The type of the project. If not specified, the project is a text to UI project.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                              "readTime":  "@{description=Output only. The time the project was last read. Populated only when listing recently viewed projects.; format=date-time; readOnly=True; type=string}",
+                                                                              "screenInstances":  "@{description=Output only. The screen instances on this project.; items=; readOnly=True; type=array}",
+                                                                              "thumbnailScreenshot":  "@{$ref=#/$defs/File; description=Optional. The screenshot to be used as the thumbnail for the project. Same as normal design screenshots, this contains the FIFE serving_base_url which requires additional FIFE URL options to be set for sizing.}",
+                                                                              "title":  "@{description=Optional. The title of the project.; type=string}",
+                                                                              "updateTime":  "@{description=Output only. The time when the project was last updated.; format=date-time; readOnly=True; type=string}",
+                                                                              "visibility":  "@{description=Optional. The visibility setting of the project.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                          },
+                                                           "type":  "object"
+                                                       },
+                                           "ProjectMetadata":  {
+                                                                   "description":  "Metadata relating to the project.",
+                                                                   "properties":  {
+                                                                                      "isRemixed":  "@{description=Whether this project was remixed or not. This allows the frontend to avoid polling for sessions since none will exist for a remixed project.; type=boolean}",
+                                                                                      "userRole":  "@{description=The Role of the user accessing the project.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                                  },
+                                                                   "type":  "object"
+                                                               },
+                                           "ScreenInstance":  {
+                                                                  "description":  "An instance of a screen on the project.",
+                                                                  "properties":  {
+                                                                                     "groupId":  "@{description=Optional. Group identifier for Genie Agent output grouping. Screens with the same groupId are rendered and interact as a group.; type=string}",
+                                                                                     "groupName":  "@{description=Optional. Human-readable name for the group (e.g., \"Warm Minimalism\", \"Ethereal Glow\").; type=string}",
+                                                                                     "height":  "@{description=Optional. The screen height.; format=int32; type=integer}",
+                                                                                     "hidden":  "@{description=Optional. User driven action hiding screen from the canvas.; type=boolean}",
+                                                                                     "id":  "@{description=Optional. The screen instance id.; type=string}",
+                                                                                     "label":  "@{description=Optional. The screen label.; type=string}",
+                                                                                     "sourceScreen":  "@{description=Optional. The resource name of the source screen. Format: projects/{project}/screens/{screen}; type=string}",
+                                                                                     "variantScreenInstance":  "@{$ref=#/$defs/ScreenInstance; description=Optional. The variant Screen Instance.}",
+                                                                                     "width":  "@{description=Optional. The screen width.; format=int32; type=integer}",
+                                                                                     "x":  "@{description=Optional. The x position of the screen.; format=int32; type=integer}",
+                                                                                     "y":  "@{description=Optional. The y position of the screen.; format=int32; type=integer}"
+                                                                                 },
+                                                                  "type":  "object"
+                                                              },
+                                           "UserFeedback":  {
+                                                                "description":  "User feedback for a given interaction.",
+                                                                "properties":  {
+                                                                                   "comment":  "@{description=Optional. Additional comment for the rating.; type=string}",
+                                                                                   "designFeedbackReason":  "@{description=Optional. The reason for the feedback for a design, if the rating is negative.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                   "rating":  "@{description=Optional. The user rating of the interaction.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                               },
+                                                                "type":  "object"
+                                                            }
+                                       },
+                             "description":  "Response message for ListProjects.",
+                             "properties":  {
+                                                "projects":  {
+                                                                 "description":  "The projects for the given user, sorted by update time from the most recent to the least recent. Adding a new session to an existing project is considered as an update to the project.",
+                                                                 "items":  {
+                                                                               "$ref":  "#/$defs/Project"
+                                                                           },
+                                                                 "type":  "array"
+                                                             }
+                                            },
+                             "type":  "object"
+                         }
+    },
+    {
+        "annotations":  {
+                            "openWorldHint":  false,
+                            "readOnlyHint":  true
+                        },
+        "description":  "Lists all screens within a given Stitch project.\n",
+        "inputSchema":  {
+                            "description":  "Request message for ListScreens.",
+                            "properties":  {
+                                               "projectId":  {
+                                                                 "description":  "Required. Identifier. The project ID to list screens for, example: \u00274044680601076201931\u0027, without the `projects/` prefix.",
+                                                                 "type":  "string",
+                                                                 "x-google-identifier":  true
+                                                             }
+                                           },
+                            "required":  [
+                                             "projectId"
+                                         ],
+                            "type":  "object"
+                        },
+        "name":  "list_screens",
+        "outputSchema":  {
+                             "$defs":  {
+                                           "File":  {
+                                                        "description":  "A File resource.",
+                                                        "properties":  {
+                                                                           "downloadUrl":  "@{description=Optional. The URL of the file for download. For image files, this would be FIFE base URLs.; type=string}",
+                                                                           "fileContent":  "@{description=Optional. Input only. Specifies the raw file content for a direct upload.; format=byte; type=string; writeOnly=True}",
+                                                                           "mimeType":  "@{description=Optional. The mime type of the file. E.g. \"image/png\", \"text/html\".; type=string}",
+                                                                           "name":  "@{description=Identifier. The resource name of the file. Format: projects/{project}/files/{file}; type=string; x-google-identifier=True}",
+                                                                           "uploadBlobId":  "@{description=Optional. The BlobId from Scotty/contrib service file upload. This points to a temporary blobstore location of the file.; type=string}",
+                                                                           "userFeedback":  "@{$ref=#/$defs/UserFeedback; description=Output only. The latest feedback submitted for the file.; readOnly=True}"
+                                                                       },
+                                                        "type":  "object"
+                                                    },
+                                           "Screen":  {
+                                                          "description":  "A screen generated by the agent.",
+                                                          "properties":  {
+                                                                             "deviceType":  "@{description=Output only. The device type of the screen.; enum=System.Object[]; readOnly=True; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                             "height":  "@{description=The height of the screen.; type=string}",
+                                                                             "htmlCode":  "@{$ref=#/$defs/File; description=The HTML code of the screen.}",
+                                                                             "name":  "@{description=Identifier. The name of the screen. Format: projects/{project}/screens/{screen}; type=string; x-google-identifier=True}",
+                                                                             "screenshot":  "@{$ref=#/$defs/File; description=The screenshot of the screen.}",
+                                                                             "title":  "@{description=Output only. The title of the screen.; readOnly=True; type=string}",
+                                                                             "width":  "@{description=The width of the screen.; type=string}"
+                                                                         },
+                                                          "type":  "object"
+                                                      },
+                                           "UserFeedback":  {
+                                                                "description":  "User feedback for a given interaction.",
+                                                                "properties":  {
+                                                                                   "comment":  "@{description=Optional. Additional comment for the rating.; type=string}",
+                                                                                   "designFeedbackReason":  "@{description=Optional. The reason for the feedback for a design, if the rating is negative.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                   "rating":  "@{description=Optional. The user rating of the interaction.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                               },
+                                                                "type":  "object"
+                                                            }
+                                       },
+                             "description":  "Response message for ListScreens.",
+                             "properties":  {
+                                                "screens":  {
+                                                                "description":  "The screens for the given project.",
+                                                                "items":  {
+                                                                              "$ref":  "#/$defs/Screen"
+                                                                          },
+                                                                "type":  "array"
+                                                            }
+                                            },
+                             "type":  "object"
+                         }
+    },
+    {
+        "annotations":  {
+                            "openWorldHint":  false,
+                            "readOnlyHint":  true
+                        },
+        "description":  "Retrieves the details of a specific screen within a project.\n",
+        "inputSchema":  {
+                            "description":  "Request message for GetScreen.",
+                            "properties":  {
+                                               "projectId":  {
+                                                                 "description":  "Required. The project ID of screen to retrieve. Example: `4044680601076201931`, without the `projects/` prefix.",
+                                                                 "type":  "string"
+                                                             },
+                                               "screenId":  {
+                                                                "description":  "Required. The screen ID of screen to retrieve. Example: `98b50e2ddc9943efb387052637738f61`, without the `screens/` prefix.",
+                                                                "type":  "string"
+                                                            }
+                                           },
+                            "required":  [
+                                             "projectId",
+                                             "screenId"
+                                         ],
+                            "type":  "object"
+                        },
+        "name":  "get_screen",
+        "outputSchema":  {
+                             "$defs":  {
+                                           "File":  {
+                                                        "description":  "A File resource.",
+                                                        "properties":  {
+                                                                           "downloadUrl":  "@{description=Optional. The URL of the file for download. For image files, this would be FIFE base URLs.; type=string}",
+                                                                           "fileContent":  "@{description=Optional. Input only. Specifies the raw file content for a direct upload.; format=byte; type=string; writeOnly=True}",
+                                                                           "mimeType":  "@{description=Optional. The mime type of the file. E.g. \"image/png\", \"text/html\".; type=string}",
+                                                                           "name":  "@{description=Identifier. The resource name of the file. Format: projects/{project}/files/{file}; type=string; x-google-identifier=True}",
+                                                                           "uploadBlobId":  "@{description=Optional. The BlobId from Scotty/contrib service file upload. This points to a temporary blobstore location of the file.; type=string}",
+                                                                           "userFeedback":  "@{$ref=#/$defs/UserFeedback; description=Output only. The latest feedback submitted for the file.; readOnly=True}"
+                                                                       },
+                                                        "type":  "object"
+                                                    },
+                                           "UserFeedback":  {
+                                                                "description":  "User feedback for a given interaction.",
+                                                                "properties":  {
+                                                                                   "comment":  "@{description=Optional. Additional comment for the rating.; type=string}",
+                                                                                   "designFeedbackReason":  "@{description=Optional. The reason for the feedback for a design, if the rating is negative.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                   "rating":  "@{description=Optional. The user rating of the interaction.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                               },
+                                                                "type":  "object"
+                                                            }
+                                       },
+                             "description":  "A screen generated by the agent.",
+                             "properties":  {
+                                                "deviceType":  {
+                                                                   "description":  "Output only. The device type of the screen.",
+                                                                   "enum":  [
+                                                                                "DEVICE_TYPE_UNSPECIFIED",
+                                                                                "MOBILE",
+                                                                                "DESKTOP",
+                                                                                "TABLET",
+                                                                                "AGNOSTIC"
+                                                                            ],
+                                                                   "readOnly":  true,
+                                                                   "type":  "string",
+                                                                   "x-google-enum-descriptions":  [
+                                                                                                      "Unspecified device type.",
+                                                                                                      "A design for a mobile device.",
+                                                                                                      "A design for a desktop device.",
+                                                                                                      "A design for a tablet device.",
+                                                                                                      "A design that is not tied to a specific device."
+                                                                                                  ]
+                                                               },
+                                                "height":  {
+                                                               "description":  "The height of the screen.",
+                                                               "type":  "string"
+                                                           },
+                                                "htmlCode":  {
+                                                                 "$ref":  "#/$defs/File",
+                                                                 "description":  "The HTML code of the screen."
+                                                             },
+                                                "name":  {
+                                                             "description":  "Identifier. The name of the screen. Format: projects/{project}/screens/{screen}",
+                                                             "type":  "string",
+                                                             "x-google-identifier":  true
+                                                         },
+                                                "screenshot":  {
+                                                                   "$ref":  "#/$defs/File",
+                                                                   "description":  "The screenshot of the screen."
+                                                               },
+                                                "title":  {
+                                                              "description":  "Output only. The title of the screen.",
+                                                              "readOnly":  true,
+                                                              "type":  "string"
+                                                          },
+                                                "width":  {
+                                                              "description":  "The width of the screen.",
+                                                              "type":  "string"
+                                                          }
+                                            },
+                             "type":  "object"
+                         }
+    },
+    {
+        "annotations":  {
+                            "destructiveHint":  true,
+                            "idempotentHint":  false,
+                            "openWorldHint":  false,
+                            "readOnlyHint":  false
+                        },
+        "description":  "Generates a new screen within a project from a text prompt.\n\n**Instructions for Tool Call:**\n*  This action can take a few minutes to complete. Please be patient. DO NOT RETRY.\n*  If the tool call fails due to connection error, the generation process may still succeed. Please try to get the screen with `get_screen` method later.\n\n**Output:**\n*  **`output_components`**: If `output_components` contains text, return it to the user. If `output_components` contains suggestions (e.g. \"Yes, make them all\"), present these suggestions to the user. If the user accepts one of the suggestions, call `generate_screen_from_text` again with `prompt` set to the accepted suggestion.\n",
+        "inputSchema":  {
+                            "description":  "Request message for GenerateScreenFromText.",
+                            "properties":  {
+                                               "deviceType":  {
+                                                                  "description":  "The type of device that captured the screenshot, e.g., mobile or desktop.",
+                                                                  "enum":  [
+                                                                               "DEVICE_TYPE_UNSPECIFIED",
+                                                                               "MOBILE",
+                                                                               "DESKTOP",
+                                                                               "TABLET",
+                                                                               "AGNOSTIC"
+                                                                           ],
+                                                                  "type":  "string",
+                                                                  "x-google-enum-descriptions":  [
+                                                                                                     "Unspecified device type.",
+                                                                                                     "A design for a mobile device.",
+                                                                                                     "A design for a desktop device.",
+                                                                                                     "A design for a tablet device.",
+                                                                                                     "A design that is not tied to a specific device."
+                                                                                                 ]
+                                                              },
+                                               "modelId":  {
+                                                               "description":  "Optional. The model to use for generation.",
+                                                               "enum":  [
+                                                                            "MODEL_ID_UNSPECIFIED",
+                                                                            "GEMINI_3_PRO",
+                                                                            "GEMINI_3_FLASH"
+                                                                        ],
+                                                               "type":  "string",
+                                                               "x-google-enum-descriptions":  [
+                                                                                                  "Unspecified model.",
+                                                                                                  "Gemini 3 Pro.",
+                                                                                                  "Gemini 3 Flash."
+                                                                                              ]
+                                                           },
+                                               "projectId":  {
+                                                                 "description":  "Required. The project ID to generate the screen for, example: \u00274044680601076201931\u0027, without the `projects/` prefix.",
+                                                                 "type":  "string"
+                                                             },
+                                               "prompt":  {
+                                                              "description":  "Required. The input text to generate the screen from.",
+                                                              "type":  "string"
+                                                          }
+                                           },
+                            "required":  [
+                                             "projectId",
+                                             "prompt"
+                                         ],
+                            "type":  "object"
+                        },
+        "name":  "generate_screen_from_text",
+        "outputSchema":  {
+                             "$defs":  {
+                                           "Asset":  {
+                                                         "description":  "An Asset resource.",
+                                                         "properties":  {
+                                                                            "designSystem":  "@{$ref=#/$defs/DesignSystem; description=Optional. The design system.}",
+                                                                            "name":  "@{description=Identifier. The resource name of the asset. Format: assets/{asset}; type=string; x-google-identifier=True}",
+                                                                            "version":  "@{description=Output only. The version of this asset. 0 indicates unversioned (legacy data). Incremented when the asset content changes.; format=int64; readOnly=True; type=string}"
+                                                                        },
+                                                         "type":  "object"
+                                                     },
+                                           "BoundingBox":  {
+                                                               "description":  "The bounding box of a component.",
+                                                               "properties":  {
+                                                                                  "height":  "@{description=The height of the bounding box.; format=int32; type=integer}",
+                                                                                  "width":  "@{description=The width of the bounding box.; format=int32; type=integer}",
+                                                                                  "x":  "@{description=The x coordinate of the bounding box, relative to the image width.; format=int32; type=integer}",
+                                                                                  "y":  "@{description=The y coordinate of the bounding box, relative to the image height.; format=int32; type=integer}"
+                                                                              },
+                                                               "type":  "object"
+                                                           },
+                                           "ComponentRegion":  {
+                                                                   "description":  "The region of a component region.",
+                                                                   "properties":  {
+                                                                                      "boundingBox":  "@{$ref=#/$defs/BoundingBox; description=The bounding box of the component region.}",
+                                                                                      "description":  "@{description=The description of the component region.; type=string}",
+                                                                                      "type":  "@{description=The type of the component region.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                      "xpath":  "@{description=The xpath of the component region.; type=string}"
+                                                                                  },
+                                                                   "type":  "object"
+                                                               },
+                                           "Design":  {
+                                                          "description":  "A generated design, which is a collection of multiple screens. Note: do not add new fields to this message or rely on it for any logic. For any Screen property, add it to Screen message instead. Design is a deprecated hierarchical container for screens and is only used for backward compatibility.",
+                                                          "properties":  {
+                                                                             "deviceType":  "@{description=Optional. The device type of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                             "screens":  "@{description=Optional. The screens of the design.; items=; type=array}",
+                                                                             "theme":  "@{$ref=#/$defs/DesignTheme; description=Optional. The theme used to generate the design.}",
+                                                                             "title":  "@{description=Optional. The generated title of the design.; type=string}"
+                                                                         },
+                                                          "type":  "object"
+                                                      },
+                                           "DesignSystem":  {
+                                                                "description":  "Represents a collection of guidelines, design tokens, and reusable components that define the visual and functional characteristics of a product\u0027s design. This is used to guide the generation of consistent and branded designs.",
+                                                                "properties":  {
+                                                                                   "designTokens":  "@{description=Optional. Serialized JSON object of the DTCG format design tokens.; type=string}",
+                                                                                   "displayName":  "@{description=Optional. The display name of the design system.; type=string}",
+                                                                                   "styleGuidelines":  "@{description=Optional. Freeform text description of the style guidelines.; type=string}",
+                                                                                   "theme":  "@{$ref=#/$defs/DesignTheme; description=Optional. The theme of the design system.}"
+                                                                               },
+                                                                "type":  "object"
+                                                            },
+                                           "DesignTheme":  {
+                                                               "description":  "The theme of the design.",
+                                                               "properties":  {
+                                                                                  "backgroundDark":  "@{description=Optional. The background color for dark mode (hex format, e.g., \"#1a1a1a\").; type=string}",
+                                                                                  "backgroundLight":  "@{description=Optional. The background color for light mode (hex format, e.g., \"#f8f8f8\").; type=string}",
+                                                                                  "colorMode":  "@{description=Optional. The mode of appearance of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "customColor":  "@{description=Optional. A custom theme primary color.; type=string}",
+                                                                                  "description":  "@{description=Optional. A brief description of the theme aesthetic.; type=string}",
+                                                                                  "font":  "@{description=Optional. The font of the design.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "preset":  "@{description=Optional. The preset color of the design.; type=string}",
+                                                                                  "roundness":  "@{description=Optional. The roundness of the design.; enum=System.Object[]; type=string; x-google-enum-deprecated=System.Object[]; x-google-enum-descriptions=System.Object[]}",
+                                                                                  "saturation":  "@{description=Optional. The saturation of the design between 1 and 4.; format=int32; type=integer}"
+                                                                              },
+                                                               "type":  "object"
+                                                           },
+                                           "File":  {
+                                                        "description":  "A File resource.",
+                                                        "properties":  {
+                                                                           "downloadUrl":  "@{description=Optional. The URL of the file for download. For image files, this would be FIFE base URLs.; type=string}",
+                                                                           "fileContent":  "@{description=Optional. Input only. Specifies the raw file content for a direct upload.; format=byte; type=string; writeOnly=True}",
+                                                                           "mimeType":  "@{description=Optional. The mime type of the file. E.g. \"image/png\", \"text/html\".; type=string}",
+                                                                           "name":  "@{description=Identifier. The resource name of the file. Format: projects/{project}/files/{file}; type=string; x-google-identifier=True}",
+                                                                           "uploadBlobId":  "@{description=Optional. The BlobId from Scotty/contrib service file upload. This points to a temporary blobstore location of the file.; type=string}",
+                                                                           "userFeedback":  "@{$ref=#/$defs/UserFeedback; description=Output only. The latest feedback submitted for the file.; readOnly=True}"
+                                                                       },
+                                                        "type":  "object"
+                                                    },
+                                           "Screen":  {
+                                                          "description":  "A generated screen.",
+                                                          "properties":  {
+                                                                             "designSystem":  "@{$ref=#/$defs/Asset; description=Output only. The design system used to generate the screen.; readOnly=True}",
+                                                                             "deviceType":  "@{description=Optional. The device type of the screen.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                             "figmaExport":  "@{$ref=#/$defs/File; description=Optional. The Figma export of the screen.}",
+                                                                             "generatedBy":  "@{description=Optional. The generated by field of the screen.; type=string}",
+                                                                             "groupId":  "@{description=Optional. The group id of the screen. This is used to group screens that are related to each other (e.g. a group of variants of a design).; type=string}",
+                                                                             "groupName":  "@{description=Optional. The name of the group (e.g., design package name) for display purposes.; type=string}",
+                                                                             "height":  "@{description=Optional. The height of the screen.; type=string}",
+                                                                             "htmlCode":  "@{$ref=#/$defs/File; description=Optional. The HTML code of the screen.}",
+                                                                             "id":  "@{deprecated=True; description=Optional. The screen id.; type=string}",
+                                                                             "isCreatedByClient":  "@{description=Optional. If true, the screen was created by client calling CreateScreen API for user uploads or copy paste. If false, the screen was created by the agents.; type=boolean}",
+                                                                             "name":  "@{description=Identifier. The resource name of the screen. Format: projects/{project}/screens/{screen}; type=string; x-google-identifier=True}",
+                                                                             "prompt":  "@{description=Optional. The prompt used to generate the screen.; type=string}",
+                                                                             "screenMetadata":  "@{$ref=#/$defs/ScreenMetadata; description=Optional. The metadata of the screen.}",
+                                                                             "screenType":  "@{description=Optional. The screen type.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                             "screenshot":  "@{$ref=#/$defs/File; description=Optional. The screenshot of the screen.}",
+                                                                             "theme":  "@{$ref=#/$defs/DesignTheme; description=Optional. The theme used to generate the screen.}",
+                                                                             "title":  "@{description=Optional. The title of the screen.; type=string}",
+                                                                             "width":  "@{description=Optional. The width of the screen.; type=string}"
+                                                                         },
+                                                          "type":  "object"
+                                                      },
+                                           "ScreenMetadata":  {
+                                                                  "description":  "The metadata of a screen.",
+                                                                  "properties":  {
+                                                                                     "agentType":  "@{description=The agent type that generated the screen.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                     "componentRegions":  "@{description=Optional. The component regions of the screen.; items=; type=array}",
+                                                                                     "displayMode":  "@{description=Optional. Whether the frontend should display HTML or a screenshot.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                     "isRemixed":  "@{description=Optional. Whether this screen was created as a result of remixing or not.; type=boolean}",
+                                                                                     "status":  "@{description=The status of the screen.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                     "statusMessage":  "@{description=Optional. A human readable status message for the screen, generated by the agent.; type=string}"
+                                                                                 },
+                                                                  "type":  "object"
+                                                              },
+                                           "SessionOutputComponent":  {
+                                                                          "description":  "A partial output of the session.",
+                                                                          "properties":  {
+                                                                                             "design":  "@{$ref=#/$defs/Design; description=The agent generates a design to be displayed to the user. Only applicable to TEXT_TO_UI and IMAGE_TO_UI projects.}",
+                                                                                             "suggestion":  "@{description=The agent generates a suggested response to be displayed to the user.; type=string}",
+                                                                                             "text":  "@{description=The agent generates a text response to be displayed to the user.; type=string}"
+                                                                                         },
+                                                                          "type":  "object"
+                                                                      },
+                                           "UserFeedback":  {
+                                                                "description":  "User feedback for a given interaction.",
+                                                                "properties":  {
+                                                                                   "comment":  "@{description=Optional. Additional comment for the rating.; type=string}",
+                                                                                   "designFeedbackReason":  "@{description=Optional. The reason for the feedback for a design, if the rating is negative.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}",
+                                                                                   "rating":  "@{description=Optional. The user rating of the interaction.; enum=System.Object[]; type=string; x-google-enum-descriptions=System.Object[]}"
+                                                                               },
+                                                                "type":  "object"
+                                                            }
+                                       },
+                             "description":  "Response message for GenerateScreenFromText.",
+                             "properties":  {
+                                                "outputComponents":  {
+                                                                         "description":  "The generated output components.",
+                                                                         "items":  {
+                                                                                       "$ref":  "#/$defs/SessionOutputComponent"
+                                                                                   },
+                                                                         "type":  "array"
+                                                                     },
+                                                "projectId":  {
+                                                                  "description":  "The project ID of the generated screen. This is the same as the input project ID.",
+                                                                  "type":  "string"
+                                                              },
+                                                "sessionId":  {
+                                                                  "description":  "The session ID of the generated screen.",
+                                                                  "type":  "string"
+                                                              }
+                                            },
+                             "type":  "object"
+                         }
+    }
+]
