@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { Calendar, Clock, AlertTriangle } from "lucide-react";
 import { PhotoUploadModal } from "@/components/dashboard/PhotoUploadModal";
 import { formatDistanceToNow, getLastActivity, updateLastActivity } from "@/utils/date";
@@ -50,7 +51,7 @@ export function UserProfileCard() {
     const handleConfirmRemove = () => {
         updateAvatar(placeholderImage);
         setIsRemoveModalOpen(false);
-        console.log("Foto removida");
+        // Foto removida com sucesso
     };
 
     const handleSavePhoto = (newImageUrl: string) => {
@@ -64,12 +65,17 @@ export function UserProfileCard() {
                     <div className="flex flex-col items-center gap-3">
                         <div className="relative">
                             <div
-                                className="size-20 rounded-full bg-cover bg-center ring-4 ring-slate-50 dark:ring-white/5"
-                                style={{
-                                    backgroundImage: `url('${user.avatarUrl}')`,
-                                }}
-                                aria-label="Foto de perfil de Ricardo Dev"
-                            />
+                                className="relative size-20 rounded-full overflow-hidden ring-4 ring-slate-50 dark:ring-white/5"
+                                aria-label="Foto de perfil"
+                            >
+                                <Image
+                                    src={user.avatarUrl}
+                                    alt={user.name}
+                                    fill
+                                    sizes="80px"
+                                    className="object-cover"
+                                />
+                            </div>
                             <div
                                 className="absolute bottom-0 right-0 bg-green-500 size-4 border-2 border-white dark:border-card-dark rounded-full"
                                 title="Online"

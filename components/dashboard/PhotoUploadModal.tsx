@@ -117,7 +117,7 @@ export function PhotoUploadModal({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Alterar foto de perfil" onKeyDown={(e) => { if (e.key === "Escape") onClose(); }}>
             <div
                 className="bg-white dark:bg-slate-900 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]"
                 onClick={(e) => e.stopPropagation()}
@@ -129,6 +129,7 @@ export function PhotoUploadModal({
                     </h3>
                     <button
                         onClick={onClose}
+                        aria-label="Fechar modal"
                         className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
                     >
                         <X className="size-5" />
@@ -156,7 +157,7 @@ export function PhotoUploadModal({
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors shadow-lg"
-                                title="Escolher imagem"
+                                aria-label="Escolher imagem"
                             >
                                 <UploadCloud className="size-4" />
                             </button>

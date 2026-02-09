@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Bot, AlertTriangle } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 
 interface MessageBubbleProps {
     type: 'bot' | 'user';
     content?: React.ReactNode;
-    timestamp?: string; // Not commonly shown in bubble in this design, but good to have
     isAnalyzing?: boolean;
 }
 
@@ -37,7 +37,7 @@ export function MessageBubble({ type, content, isAnalyzing }: MessageBubbleProps
     if (type === 'user') {
         return (
             <div className="flex flex-row-reverse gap-4">
-                <img className="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-[#334155] shadow-sm" src={user.avatarUrl} alt={user.name} />
+                <Image width={40} height={40} className="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-[#334155] shadow-sm" src={user.avatarUrl} alt={user.name} />
                 <div className="flex-1 max-w-2xl flex flex-col items-end">
                     <div className="bg-primary text-white p-5 rounded-2xl rounded-tr-none shadow-md">
                         {/* We render content directly because it might be text or JSX */}

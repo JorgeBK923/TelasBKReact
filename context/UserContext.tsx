@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CURRENT_USER } from "@/constants/user";
 
 interface UserData {
@@ -31,13 +31,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    const updateAvatar = (newUrl: string) => {
+    const updateAvatar = useCallback((newUrl: string) => {
         setUser((prev) => ({ ...prev, avatarUrl: newUrl }));
         localStorage.setItem("user_profile_image", newUrl);
-    };
+    }, []);
+
+    const value = useMemo(() => ({ user, updateAvatar }), [user, updateAvatar]);
 
     return (
-        <UserContext.Provider value={{ user, updateAvatar }}>
+        <UserContext.Provider value={value}>
             {children}
         </UserContext.Provider>
     );

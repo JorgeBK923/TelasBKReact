@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
     User,
@@ -14,6 +15,19 @@ import {
     ChevronDown
 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
+import { useClickOutside } from '@/hooks/useClickOutside';
+
+const menuItems = [
+    { href: '/profile', label: 'Dados', icon: User },
+    { href: '/billing', label: 'Plano', icon: CreditCard },
+    { href: '/usage', label: 'Uso', icon: BarChart3 },
+];
+
+const systemItems = [
+    { href: '/integrations', label: 'Integrações', icon: Puzzle },
+    { href: '/settings', label: 'Preferências', icon: Settings },
+    { href: '/security', label: 'Segurança', icon: Lock },
+];
 
 export function ProfileMenu() {
     const { user } = useUser();
@@ -23,18 +37,9 @@ export function ProfileMenu() {
     const pathname = usePathname();
     const router = useRouter();
 
-    // Close on click outside
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+    const closeMenu = useCallback(() => setIsOpen(false), []);
+
+    useClickOutside(menuRef, closeMenu);
 
     // Close on route change
     useEffect(() => {
@@ -43,23 +48,9 @@ export function ProfileMenu() {
 
     const handleLogout = async () => {
         setIsLoggingOut(true);
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 800));
-        // Clear cookies/storage here if needed
         router.push('/login');
     };
-
-    const menuItems = [
-        { href: '/profile', label: 'Dados', icon: User },
-        { href: '/billing', label: 'Plano', icon: CreditCard },
-        { href: '/usage', label: 'Uso', icon: BarChart3 },
-    ];
-
-    const systemItems = [
-        { href: '/integrations', label: 'Integrações', icon: Puzzle },
-        { href: '/settings', label: 'Preferências', icon: Settings },
-        { href: '/security', label: 'Segurança', icon: Lock },
-    ];
 
     return (
         <div className="relative" ref={menuRef}>
@@ -69,16 +60,21 @@ export function ProfileMenu() {
                 className="flex items-center gap-2 focus:outline-none group"
                 aria-expanded={isOpen}
                 aria-haspopup="true"
+                aria-label="Menu do perfil"
             >
                 <div className="relative">
                     <div
-                        className={`size-9 rounded-full bg-cover bg-center border-2 transition-all duration-200 shadow-sm ${isOpen ? 'border-primary ring-2 ring-primary/20' : 'border-white/30 dark:border-white/10 group-hover:border-primary/50'}`}
-                        style={{
-                            backgroundImage: `url('${user.avatarUrl}')`,
-                        }}
+                        className={`relative size-9 rounded-full overflow-hidden border-2 transition-all duration-200 shadow-sm ${isOpen ? 'border-primary ring-2 ring-primary/20' : 'border-white/30 dark:border-white/10 group-hover:border-primary/50'}`}
                     >
-                        <div className="bg-green-500 size-2.5 border border-primary dark:border-card-dark rounded-full absolute bottom-0 right-0 transform translate-y-1/4 translate-x-1/4"></div>
+                        <Image
+                            src={user.avatarUrl}
+                            alt={user.name}
+                            fill
+                            sizes="36px"
+                            className="object-cover"
+                        />
                     </div>
+                    <div className="bg-green-500 size-2.5 border border-primary dark:border-card-dark rounded-full absolute bottom-0 right-0 transform translate-y-1/4 translate-x-1/4 z-10"></div>
                 </div>
                 <ChevronDown className={`size-4 text-white/70 transition-transform duration-200 ${isOpen ? 'rotate-180 text-white' : 'group-hover:text-white'}`} />
             </button>
@@ -94,9 +90,11 @@ export function ProfileMenu() {
                         {/* Header Section */}
                         <div className="p-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
                             <div className="flex items-center gap-4 mb-3">
-                                <img
+                                <Image
                                     src={user.avatarUrl}
                                     alt={user.name}
+                                    width={64}
+                                    height={64}
                                     className="size-16 rounded-full object-cover border-4 border-white dark:border-[#15191f] shadow-md"
                                 />
                                 <div>

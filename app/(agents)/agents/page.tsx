@@ -1,7 +1,7 @@
 import React from 'react';
 import { FilterBar } from '@/components/agents/FilterBar';
 import { AgentCard } from '@/components/agents/AgentCard';
-import { Brain, Zap, Box } from 'lucide-react';
+import { Brain, Zap } from 'lucide-react';
 
 export default function AgentsPage() {
     return (

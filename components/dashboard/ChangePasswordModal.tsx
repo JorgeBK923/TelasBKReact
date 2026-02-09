@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Lock, Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import { X, Lock, Eye, EyeOff, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface ChangePasswordModalProps {
@@ -62,7 +62,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Alterar senha" onKeyDown={(e) => { if (e.key === "Escape") onClose(); }}>
             <div className="bg-white dark:bg-card-dark w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden animate-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/5">
@@ -76,6 +76,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
                     </div>
                     <button
                         onClick={onClose}
+                        aria-label="Fechar modal"
                         className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 dark:text-slate-500 transition-colors"
                     >
                         <X className="size-5" />
@@ -197,19 +198,3 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
         </div>
     );
 }
-
-const AlertTriangle = ({ className }: { className?: string }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24" height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-    >
-        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" />
-    </svg>
-);

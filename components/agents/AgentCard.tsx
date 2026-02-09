@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Brain, Zap, History, AlertTriangle } from 'lucide-react';
 
 export interface AgentCardProps {
@@ -23,7 +24,7 @@ export function AgentCard({ name, description, version, tags, icon, image, statu
             <div className={`p-6 flex-1 ${status === 'offline' ? 'opacity-70 group-hover:opacity-100 transition-opacity' : ''}`}>
                 <div className="flex justify-between items-start mb-5">
                     {image ? (
-                        <img alt={`Avatar do Agente ${name}`} className={`h-14 w-14 rounded-xl object-cover shadow-md ring-1 ring-slate-900/5 ${status === 'offline' ? 'grayscale opacity-80' : ''}`} src={image} />
+                        <Image alt={`Avatar do Agente ${name}`} width={56} height={56} className={`h-14 w-14 rounded-xl object-cover shadow-md ring-1 ring-slate-900/5 ${status === 'offline' ? 'grayscale opacity-80' : ''}`} src={image} />
                     ) : (
                         <div className="h-14 w-14 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shadow-md">
                             {icon || <Brain className="w-8 h-8" />}
