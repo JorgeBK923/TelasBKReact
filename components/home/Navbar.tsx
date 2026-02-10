@@ -42,6 +42,9 @@ export function Navbar() {
                     <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="#pricing">
                         Preços
                     </a>
+                    <Link className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="/contact">
+                        Contato
+                    </Link>
 
                     {/* Theme Toggle Button */}
                     <button

@@ -15,8 +15,10 @@ import { UpdateCardModal } from "@/components/dashboard/UpdateCardModal";
 import { CancelSubscriptionModal } from "@/components/dashboard/CancelSubscriptionModal";
 import { PauseSubscriptionModal } from "@/components/dashboard/PauseSubscriptionModal";
 import Link from "next/link";
+import { useUser } from "@/context/UserContext";
 
 export default function BillingPage() {
+    const { user } = useUser();
     const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
     const [isManageModalOpen, setIsManageModalOpen] = useState(false);
     const [isUpdateCardModalOpen, setIsUpdateCardModalOpen] = useState(false);
@@ -287,7 +289,7 @@ export default function BillingPage() {
                                 <input
                                     className="w-full bg-white/20 border-transparent rounded text-xs text-white placeholder-white/50 px-3 py-2 focus:ring-0"
                                     readOnly
-                                    value="bugkillers.ai/u/ricardo"
+                                    value={`bugkillers.ai/u/${user.name.toLowerCase().split(" ")[0]}`}
                                 />
                                 <button
                                     className="bg-white text-primary p-2 rounded hover:bg-white/90 transition-colors"

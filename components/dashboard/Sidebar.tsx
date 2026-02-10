@@ -7,6 +7,8 @@ import {
     Puzzle,
     Settings,
     Lock,
+    HelpCircle,
+    MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,6 +27,7 @@ const navItems: NavItem[] = [
     { href: "/integrations", label: "Integrações", icon: <Puzzle className="size-5" />, section: "Sistema" },
     { href: "/settings", label: "Preferências", icon: <Settings className="size-5" /> },
     { href: "/security", label: "Segurança", icon: <Lock className="size-5" /> },
+    { href: "/help", label: "Ajuda", icon: <HelpCircle className="size-5" />, section: "Suporte" },
 ];
 
 export function Sidebar() {

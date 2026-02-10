@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Calendar,
     Clock,
@@ -9,10 +11,13 @@ import {
     Gauge,
     Info,
 } from "lucide-react";
+import Image from "next/image";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import Link from "next/link";
+import { useUser } from "@/context/UserContext";
 
 export default function DashboardPage() {
+    const { user } = useUser();
     return (
         <DashboardLayout>
             {/* Mobile Navigation Pills */}
@@ -50,13 +55,17 @@ export default function DashboardPage() {
                         <div className="flex flex-col items-center gap-3">
                             <div className="relative">
                                 <div
-                                    className="size-20 rounded-full bg-cover bg-center ring-4 ring-slate-50 dark:ring-white/5"
-                                    style={{
-                                        backgroundImage:
-                                            "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBrzo0FcvIunHSpnEoPZ8JbTeyUACHHixGsutFCzHk5sHWyA9u5blbx8Dz6Nn9tZcU9w3rnrU0pYXoLtsXxhHW3zJT7wW1IVym5fOKisUZwh4M-ppc3f7RHZlsufb5BjepVXMn08hUkUPSqSmRXNru5FyUi6feECZjTv-ML92XcvkSojBtITpKIDnrNxj0n5TUiGN4R8SghPXOjrN7pJlklAUEjISeh7l8lgs7Hu54swag2xMgIJVujvL8DbqZsMAq6zeFtwzDeCLI')",
-                                    }}
-                                    aria-label="Ricardo Dev profile picture"
-                                ></div>
+                                    className="relative size-20 rounded-full overflow-hidden ring-4 ring-slate-50 dark:ring-white/5"
+                                    aria-label={`Foto de perfil de ${user.name}`}
+                                >
+                                    <Image
+                                        src={user.avatarUrl}
+                                        alt={user.name}
+                                        fill
+                                        sizes="80px"
+                                        className="object-cover"
+                                    />
+                                </div>
                                 <div
                                     className="absolute bottom-0 right-0 bg-green-500 size-4 border-2 border-white dark:border-card-dark rounded-full"
                                     title="Online"
@@ -77,14 +86,14 @@ export default function DashboardPage() {
                         <div className="flex flex-col mt-1">
                             <div className="flex items-center gap-3 flex-wrap mb-1">
                                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                                    Ricardo Dev
+                                    {user.name}
                                 </h2>
                                 <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wide">
-                                    Plano Enterprise
+                                    Plano {user.plan}
                                 </span>
                             </div>
                             <p className="text-slate-500 dark:text-slate-400">
-                                ricardo@bugkillers.ai
+                                {user.email}
                             </p>
                             <div className="flex flex-col gap-1 mt-3">
                                 <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">

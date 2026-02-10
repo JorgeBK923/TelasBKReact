@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Bell, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 interface IntegrationNotifyModalProps {
     isOpen: boolean;
@@ -18,7 +19,8 @@ export function IntegrationNotifyModal({
     serviceIcon: Icon,
     serviceColor = "#FF6C37",
 }: IntegrationNotifyModalProps) {
-    const [email, setEmail] = useState("ricardo@bugkillers.ai");
+    const { user } = useUser();
+    const [email, setEmail] = useState(user.email);
     const [selectedUseCase, setSelectedUseCase] = useState("");
     const [customUseCase, setCustomUseCase] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +45,7 @@ export function IntegrationNotifyModal({
 
         setTimeout(() => {
             setIsSuccess(false);
-            setEmail("ricardo@bugkillers.ai");
+            setEmail(user.email);
             setSelectedUseCase("");
             setCustomUseCase("");
             onClose();
@@ -52,7 +54,7 @@ export function IntegrationNotifyModal({
 
     const handleClose = () => {
         if (!isLoading) {
-            setEmail("ricardo@bugkillers.ai");
+            setEmail(user.email);
             setSelectedUseCase("");
             setCustomUseCase("");
             setIsSuccess(false);
