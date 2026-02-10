@@ -1,18 +1,13 @@
 import { Clock } from "lucide-react";
+import { Article } from "@/constants/help-data";
 
-interface Article {
-    title: string;
-    description: string;
-    readTime: string;
+interface PopularArticlesProps {
+    articles: Article[];
 }
 
-const articles: Article[] = [
-    { title: "Como criar seu primeiro cenário BDD", description: "Passo a passo detalhado utilizando a linguagem Gherkin no editor visual.", readTime: "5 min" },
-    { title: "Configurando webhooks para alertas em tempo real", description: "Receba notificações no Slack ou Teams sempre que um teste falhar.", readTime: "3 min" },
-    { title: "Solução de problemas com o Agente AI", description: "O que fazer quando a IA não identifica corretamente um elemento da UI.", readTime: "8 min" },
-];
+export function PopularArticles({ articles }: PopularArticlesProps) {
+    if (articles.length === 0) return null;
 
-export function PopularArticles() {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">

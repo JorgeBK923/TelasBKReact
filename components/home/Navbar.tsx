@@ -33,13 +33,13 @@ export function Navbar() {
                 </div>
 
                 <div className="hidden md:flex items-center gap-6">
-                    <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="#product">
+                    <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="/#product">
                         Produto
                     </a>
-                    <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="#agents">
+                    <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="/#agents">
                         Agentes
                     </a>
-                    <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="#pricing">
+                    <a className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="/#pricing">
                         Preços
                     </a>
                     <Link className="text-sm font-medium text-slate-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors" href="/contact">

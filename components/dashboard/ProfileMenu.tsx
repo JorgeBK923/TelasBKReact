@@ -12,7 +12,8 @@ import {
     Settings,
     Lock,
     LogOut,
-    ChevronDown
+    ChevronDown,
+    HelpCircle
 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 import { useClickOutside } from '@/hooks/useClickOutside';
@@ -27,6 +28,7 @@ const systemItems = [
     { href: '/integrations', label: 'Integrações', icon: Puzzle },
     { href: '/settings', label: 'Preferências', icon: Settings },
     { href: '/security', label: 'Segurança', icon: Lock },
+    { href: '/help', label: 'Ajuda', icon: HelpCircle },
 ];
 
 export function ProfileMenu() {

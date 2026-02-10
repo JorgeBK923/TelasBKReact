@@ -33,7 +33,10 @@ export function ContactForm() {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
+    const isFormValid = formData.name.trim() && formData.email.trim() && formData.message.trim();
+
     const handleSubmit = async () => {
+        if (!isFormValid) return;
         setIsSubmitting(true);
         await new Promise((resolve) => setTimeout(resolve, 1500));
         setIsSubmitting(false);
@@ -113,9 +116,9 @@ export function ContactForm() {
                 </label>
                 <div className="pt-2">
                     <button
-                        className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-8 transition-colors shadow-lg shadow-blue-500/20 ${isSubmitting ? "opacity-90 cursor-wait" : ""}`}
+                        className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-8 transition-colors shadow-lg shadow-blue-500/20 ${isSubmitting ? "opacity-90 cursor-wait" : !isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
                         type="button"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !isFormValid}
                         onClick={handleSubmit}
                     >
                         {isSubmitting ? (

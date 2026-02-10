@@ -149,7 +149,7 @@ export default function SecurityPage() {
                         </div>
                         <button
                             onClick={() => setIsTwoFactorModalOpen(true)}
-                            className="w-full px-4 py-2.5 rounded-lg border-2 border-primary text-primary text-sm font-semibold hover:bg-primary hover:text-white transition-colors"
+                            className="w-full px-4 py-2.5 rounded-lg border-2 border-primary text-primary text-sm font-semibold hover:bg-primary hover:text-white! transition-colors"
                         >
                             Ativar 2FA
                         </button>

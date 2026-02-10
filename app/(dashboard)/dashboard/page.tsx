@@ -12,14 +12,13 @@ import {
     Info,
 } from "lucide-react";
 import Image from "next/image";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import Link from "next/link";
 import { useUser } from "@/context/UserContext";
 
 export default function DashboardPage() {
     const { user } = useUser();
     return (
-        <DashboardLayout>
+        <>
             {/* Mobile Navigation Pills */}
             <div className="md:hidden flex overflow-x-auto pb-2 gap-2 no-scrollbar mb-6 -mx-4 px-4">
                 <Link
@@ -379,6 +378,6 @@ export default function DashboardPage() {
                     </p>
                 </footer>
             </div>
-        </DashboardLayout>
+        </>
     );
 }

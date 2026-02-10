@@ -45,7 +45,7 @@ const roadmapItems = [
 
 export function Roadmap() {
     return (
-        <section className="py-24 px-4 bg-slate-50 dark:bg-[#0a0e1a] overflow-hidden transition-colors duration-200">
+        <section id="agents" className="py-24 px-4 bg-slate-50 dark:bg-[#0a0e1a] overflow-hidden transition-colors duration-200 scroll-mt-20">
             <div className="max-w-7xl mx-auto">
                 <h2 className="text-3xl font-black mb-16 text-center text-slate-900 dark:text-white">
                     Futuro da Automação

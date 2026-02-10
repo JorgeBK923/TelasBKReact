@@ -55,7 +55,7 @@ const plans = [
 
 export function Pricing() {
     return (
-        <section className="py-24 px-4 bg-slate-50 dark:bg-slate-900/30 transition-colors duration-200" id="pricing">
+        <section className="py-24 px-4 bg-slate-50 dark:bg-slate-900/30 transition-colors duration-200 scroll-mt-20" id="pricing">
             <div className="max-w-7xl mx-auto">
                 <h2 className="text-3xl md:text-4xl font-black text-center mb-4 text-slate-900 dark:text-white">
                     Planos Simples

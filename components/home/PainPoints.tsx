@@ -29,7 +29,7 @@ const painPoints = [
 
 export function PainPoints() {
     return (
-        <section className="py-24 px-4 bg-white dark:bg-[#0a0e1a] relative transition-colors duration-200">
+        <section id="product" className="py-24 px-4 bg-white dark:bg-[#0a0e1a] relative transition-colors duration-200 scroll-mt-20">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-16">
                     <h2 className="text-3xl md:text-4xl font-black mb-4 text-slate-900 dark:text-white">

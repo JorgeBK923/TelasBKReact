@@ -5,3 +5,4 @@ export { PopularArticles } from "./PopularArticles";
 export { WhatsNew } from "./WhatsNew";
 export { VideoTutorials } from "./VideoTutorials";
 export { HelpBottomCTA } from "./HelpBottomCTA";
+export { SupportModal } from "./SupportModal";
