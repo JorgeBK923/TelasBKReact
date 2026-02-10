@@ -15,6 +15,7 @@ Plataforma web desenvolvida com **Next.js 16**, **React 19** e **Tailwind CSS 4*
 - [Segurança](#-segurança)
 - [Temas Light/Dark](#-temas-lightdark)
 - [Cores Customizadas](#-cores-customizadas)
+- [Responsividade](#-responsividade)
 
 ---
 
@@ -42,13 +43,16 @@ Projeto-BugKillers/
 │   │   └── login/                # Página de Login com Tema Dinâmico
 │   ├── (dashboard)/              # Grupo de rotas do Dashboard
 │   │   ├── layout.tsx            # Layout com Header reativo
+│   │   ├── dashboard/            # Página principal do painel [REFATORADO]
+│   │   ├── help/                 # [NOVO] Central de Ajuda
 │   │   ├── profile/              # Página de perfil [REFATORADO]
 │   │   ├── settings/             # Página de preferências [REFATORADO]
 │   │   └── ...                   # Páginas de billing, security, etc
 │   ├── (website)/                # Landing page [OTIMIZADO]
-│   ├── (workspace)/              # Área de chat e trabalho [NOVO]
+│   │   └── contact/              # [NOVO] Página de Contato
+│   ├── (workspace)/              # Área de chat e trabalho [REFATORADO]
 │   │   ├── layout.tsx            # Sidebar azul dedicada
-│   │   └── chat/                 # Ambiente de Chat IA
+│   │   └── chat/                 # Ambiente de Chat IA [REFATORADO]
 │   ├── error.tsx                 # [NOVO] Página de erro padrão
 │   ├── global-error.tsx          # [NOVO] Página de erro crítico global
 │   ├── globals.css               # Estilos globais v4
@@ -83,11 +87,31 @@ Projeto-BugKillers/
 │   │   │   └── PushNotificationsCard.tsx   # Notificações push do navegador
 │   │   └── index.ts              # Exports centralizados
 │   │
-│   ├── agents/                   # AgentCard, FilterBar
-│   ├── chat/                     # ChatSidebar, ChatWindow, MessageBubble
-│   ├── auth/                     # LoginForm, SocialButtons
+│   ├── agents/                   # AgentCard, FilterBar [REFATORADO]
+│   ├── chat/                     # ChatSidebar, ChatWindow, MessageBubble [REFATORADO]
+│   ├── auth/                     # LoginForm, SocialButtons [REFATORADO]
+│   ├── contact/                  # [NOVO] Componentes da página de Contato
+│   │   ├── ContactHero.tsx       # Hero da página de contato
+│   │   ├── ContactForm.tsx       # Formulário de contato com validação
+│   │   ├── SupportChannels.tsx   # Canais de suporte (email, chat, central)
+│   │   ├── ContactFAQ.tsx        # Accordion de perguntas frequentes
+│   │   ├── DemoCTA.tsx           # CTA para agendar demonstração
+│   │   ├── ScheduleDemoModal.tsx # Modal de agendamento de demo
+│   │   └── index.ts              # Exports centralizados
+│   │
+│   ├── help/                     # [NOVO] Componentes da Central de Ajuda
+│   │   ├── HelpHero.tsx          # Busca e chips de tópicos populares
+│   │   ├── HelpBreadcrumbs.tsx   # Breadcrumb de navegação
+│   │   ├── CategoryGrid.tsx      # Grid de categorias de ajuda
+│   │   ├── PopularArticles.tsx   # Artigos mais acessados
+│   │   ├── VideoTutorials.tsx    # Grid de vídeo-tutoriais
+│   │   ├── WhatsNew.tsx          # Timeline de novidades
+│   │   ├── HelpBottomCTA.tsx     # CTA para falar com suporte
+│   │   ├── SupportModal.tsx      # Modal de contato com suporte
+│   │   └── index.ts              # Exports centralizados
+│   │
 │   ├── home/                     # Componentes da landing page
-│   │   ├── Navbar.tsx            # Navegação do site
+│   │   ├── Navbar.tsx            # Navegação do site [REFATORADO]
 │   │   ├── Hero.tsx              # Seção hero
 │   │   ├── Pricing.tsx           # Tabela de preços
 │   │   ├── Footer.tsx            # Rodapé
@@ -97,11 +121,17 @@ Projeto-BugKillers/
 │       ├── ErrorBoundary.tsx     # Captura de erros em componentes
 │       └── Toggle.tsx            # Switch toggle acessível
 │
-├── hooks/                        # [NOVO] Hooks customizados
-│   └── useClickOutside.ts        # Detecta cliques fora de elementos
+├── hooks/                        # Hooks customizados
+│   ├── useClickOutside.ts        # Detecta cliques fora de elementos
+│   └── useChat.ts                # [NOVO] Hook de chat IA com streaming simulado
+│
+├── types/                        # [NOVO] Tipagens TypeScript
+│   └── chat-types.ts             # Interfaces de ChatMessage e Conversation
 │
 ├── context/                      # UserContext (Estado Global) [OTIMIZADO]
-├── constants/                    # user.ts (Dados Iniciais)
+├── constants/                    # Dados estáticos
+│   ├── user.ts                   # Dados iniciais do usuário
+│   └── help-data.ts              # [NOVO] Categorias e artigos da Central de Ajuda
 ├── providers/                    # Context Providers
 │   └── ThemeProvider.tsx         # Provider do next-themes
 │
@@ -110,9 +140,6 @@ Projeto-BugKillers/
 │   ├── DraftIntegracoes.tsx      # Design da página de Integrações
 │   ├── DraftPreferencia.tsx      # Design da página de Preferências
 │   └── DraftSeguranca.tsx        # Design da página de Segurança
-│
-├── contact-support.tsx           # [NOVO] Protótipo de Contato e Suporte
-├── help-center.tsx               # [NOVO] Protótipo de Central de Ajuda
 │
 ├── public/                       # Arquivos estáticos
 │   └── default-avatar.svg       # [NOVO] Avatar padrão local (SVG)
@@ -164,6 +191,13 @@ npm start
 
 ### Dashboard (Gestão)
 
+#### `Sidebar.tsx` [REFATORADO]
+Menu lateral com navegação organizada por seções:
+- **Seções**: Conta (Perfil, Plano, Dados) → Sistema (Integrações, Preferências, Segurança) → Suporte (Ajuda).
+- **Novo Link**: Rota `/help` adicionada na seção Suporte com ícone `HelpCircle`.
+- **Estado Ativo**: Indicador visual com borda esquerda + fundo highlight.
+- **Voltar para Agentes**: Botão de retorno com ícone `Bot`.
+
 #### `Header.tsx` & `ProfileMenu.tsx`
 Interface de cabeçalho inteligente:
 - **Dados Reativos**: Nome e avatar sincronizados via `UserContext`.
@@ -172,6 +206,14 @@ Interface de cabeçalho inteligente:
 - **Imagens Otimizadas**: Migrado para `next/image` com `Image` component. [REFATORADO]
 - **Click Outside**: Usa hook `useClickOutside` para fechar o menu. [REFATORADO]
 - **Acessibilidade**: Atributos `aria-label`, `aria-expanded` e `aria-haspopup`. [REFATORADO]
+
+#### `dashboard/page.tsx` [REFATORADO]
+Página principal do painel com visão geral completa:
+- **Métricas de Uso**: Contador de cenários gerados com barra de progresso.
+- **Economia Estimada**: Card gradiente com horas salvas e custo evitado (R$).
+- **Histórico**: Gráfico de barras com uso dos últimos 6 meses.
+- **Performance de Agentes**: Métricas individuais por agente (QA Criador, Funcional Pro, Security Bot, Performance Monitor).
+- **Navegação Mobile**: Pills horizontais para acesso rápido às seções.
 
 #### `UserProfileCard.tsx`
 Componente central de gestão de perfil:
@@ -221,27 +263,30 @@ Boundary de captura de erros em componentes React:
 - **UI Padrão**: Ícone de alerta, mensagem de erro e botão "Tentar Novamente".
 - **Integração**: Envolvido no root `layout.tsx` protegendo toda a aplicação.
 
-### 🪝 Hooks Customizados [NOVO]
-
-#### `useClickOutside.ts`
-Hook para detectar cliques fora de um elemento:
-- **Ref-based**: Recebe um `RefObject` e um handler de callback.
-- **Cleanup**: Remove automaticamente o event listener no unmount.
-- **Uso**: Substituiu lógica inline no `ProfileMenu` por hook reutilizável.
-
-### 🤖 Agentes (Seleção)
+### 🤖 Agentes (Seleção) [REFATORADO]
 
 #### `AgentCard.tsx`
 Cartões informativos sobre os agentes de IA:
-- **Status**: Indicadores visuais de Online/Manutenção.
+- **Status**: Indicadores visuais de Disponível/Manutenção/Offline.
 - **Labels**: Versão, Tags e Prioridade.
+- **Reiniciar**: Funcionalidade de restart com estados de loading, sucesso e erro.
+- **Badges**: Indicadores de "Novo" e alta prioridade.
+- **Última Execução**: Timestamp da execução mais recente.
 - **Imagens Otimizadas**: Migrado de `<img>` para `next/image`. [REFATORADO]
 
 #### `FilterBar.tsx`
 Sistema de busca e filtragem:
 - Busca por nome e filtros por categoria de teste.
 
-### 💬 Workspace (Chat)
+### 💬 Workspace (Chat) [REFATORADO]
+
+#### `ChatWindow.tsx`
+Interface de chat completa com integração ao hook `useChat`:
+- **Mensagens**: Renderização via `MessageBubble` com scroll automático.
+- **Textarea Dinâmico**: Auto-resize até 128px de altura máxima.
+- **Anexos**: Botão de anexar arquivos com ícones inteligentes por extensão (`FileImage`, `FileCode`, `FileText`).
+- **Novo Chat**: Botão para iniciar nova conversa com `resetChat()`.
+- **Erro**: Exibição de erros com `AlertCircle`.
 
 #### `ChatSidebar.tsx`
 Histórico de conversas inteligente e perfil do usuário:
@@ -253,9 +298,6 @@ Interface de conversa premium:
 - **Markdown & Código**: Suporte a blocos de código com sintaxe destacada.
 - **Identidade**: Mostra o avatar do usuário atual em tempo real.
 - **Imagens Otimizadas**: Migrado para `next/image`. [REFATORADO]
-
-#### `ChatWindow.tsx`
-Interface de chat fluida com suporte a inputs de texto e áreas de visualização de mensagens otimizadas.
 
 #### Modais de Segurança
 - **`ChangePasswordModal.tsx`**: Validação de força de senha em tempo real e confirmação. Agora com acessibilidade (`role="dialog"`, `aria-modal`, fechamento por `Escape`) e ícone `AlertTriangle` do lucide-react. [REFATORADO]
@@ -289,6 +331,116 @@ Modal de confirmação crítica com:
 - Botão de cancelamento "Manter minha conta"
 - Lista do que será excluído
 
+### 📞 Contato [NOVO]
+
+#### `ContactHero.tsx`
+Hero da página de contato:
+- **Ícone + Headline**: "Como podemos ajudar?" com tagline sobre especialistas em QA.
+- **Layout**: Texto centralizado com espaçamento generoso.
+
+#### `ContactForm.tsx`
+Formulário de contato com validação completa:
+- **Campos**: Nome, Email (com ícone `Mail`), Empresa (com ícone `Building2`), Assunto (select) e Mensagem (textarea).
+- **Assuntos**: Quero conhecer a plataforma, Suporte técnico, Falar sobre preços, Parcerias.
+- **Submit**: Estados idle → loading (spinner) → success (CheckCircle + "Enviado!").
+- **Auto-Reset**: Formulário limpa automaticamente após envio com sucesso.
+
+#### `SupportChannels.tsx`
+Card de canais de atendimento:
+- **Canais**: Email, Chat ao Vivo (com indicador pulsante) e Central de Ajuda.
+- **Horário Comercial**: Segunda a Sexta, 09h às 18h (BRT).
+- **Redes Sociais**: Links para Twitter, GitHub e Facebook com ícones SVG.
+
+#### `ContactFAQ.tsx`
+Accordion de perguntas frequentes:
+- **5 Perguntas**: Período de teste, integrações, segurança, suporte e cancelamento.
+- **Animação**: Ícone `ChevronDown` rotaciona 180° ao expandir.
+- **Transição**: Slide-in suave ao abrir cada resposta.
+
+#### `DemoCTA.tsx`
+Seção CTA para demonstração ao vivo:
+- **Visual**: Background com gradiente radial.
+- **Ação**: Botão abre `ScheduleDemoModal`.
+
+#### `ScheduleDemoModal.tsx`
+Modal de agendamento de demonstração em 2 etapas:
+- **Campos**: Nome, Email, Empresa e Tamanho do Time (1-5, 6-15, 16-50, 50+).
+- **Horários**: Grid com 12 slots de 30 minutos (09:00–16:30), seleção visual com destaque azul.
+- **Sucesso**: Confirmação com horário em BRT e duração de 15 minutos.
+- **Acessibilidade**: Fechamento por Escape, backdrop click e bloqueio de scroll.
+
+### ❓ Central de Ajuda [NOVO]
+
+#### `HelpHero.tsx`
+Hero com busca e tópicos populares:
+- **Busca**: Input com ícone de lupa e filtragem em tempo real de categorias e artigos.
+- **Chips**: Botões de atalho para tópicos populares ("Criar cenário", "Integração Jira", "Webhook").
+- **Estados de Foco**: Feedback visual acessível no input.
+
+#### `HelpBreadcrumbs.tsx`
+Breadcrumb de navegação:
+- **Caminho**: Home / Ajuda com link de retorno ao perfil.
+
+#### `CategoryGrid.tsx`
+Grid responsivo de categorias de ajuda:
+- **Layout**: 1 coluna (mobile), 2 colunas (tablet), 3 colunas (desktop).
+- **Cards**: Emoji destacado + título + quantidade de artigos por categoria.
+- **Hover**: Animação de scale no emoji e mudança de borda/sombra.
+- **6 Categorias**: Primeiros Passos, Agente AI, Integrações, Melhores Práticas, Segurança, Faturamento.
+
+#### `PopularArticles.tsx`
+Listagem de artigos mais acessados:
+- **Layout**: 2 colunas (título + badge de tempo de leitura).
+- **Tempo**: Ícone `Clock` com estimativa em minutos (3–8 min).
+
+#### `VideoTutorials.tsx`
+Grid de vídeo-tutoriais:
+- **Layout**: 1/2/3 colunas responsivo com thumbnails de vídeo.
+- **Overlay**: Botão de play centralizado com efeito hover.
+- **Duração**: Badge no canto inferior direito de cada thumbnail.
+
+#### `WhatsNew.tsx`
+Timeline de novidades recentes:
+- **3 Atualizações**: Integração Azure DevOps, melhorias em AI Assertions, Dark Mode Beta.
+- **Visual**: Linha vertical com dots conectores e labels de data.
+- **Link**: Acesso ao changelog completo.
+
+#### `HelpBottomCTA.tsx`
+Seção CTA inferior para suporte direto:
+- **Headline**: "Não encontrou o que procurava?"
+- **Ação**: Botão "Falar com Suporte" abre `SupportModal` (anteriormente navegava para `/contact`).
+
+#### `SupportModal.tsx`
+Modal de contato com suporte em 2 etapas:
+- **Campos**: Nome, Email (lado a lado em sm+), Assunto (select) e Mensagem (textarea).
+- **Assuntos**: Suporte técnico, Dúvida sobre a plataforma, Problemas de faturamento, Feedback ou sugestão.
+- **Validação**: Nome, email e mensagem obrigatórios.
+- **Sucesso**: Confirmação com email do usuário, contato@bugkillers.com e tempo de resposta (até 2h úteis).
+- **Acessibilidade**: `role="dialog"`, `aria-modal`, fechamento por Escape, backdrop click e bloqueio de scroll.
+
+### 🏠 Landing Page [REFATORADO]
+
+#### `Navbar.tsx`
+Navegação principal do site:
+- **Novo Link**: "Contato" adicionado na navegação desktop (antes do Login).
+- **Toggle de Tema**: Botões Sun/Moon com animações de rotação.
+- **Hidratação**: Correção com estado `mounted` para evitar mismatch SSR.
+
+### 🪝 Hooks Customizados
+
+#### `useClickOutside.ts`
+Hook para detectar cliques fora de um elemento:
+- **Ref-based**: Recebe um `RefObject` e um handler de callback.
+- **Cleanup**: Remove automaticamente o event listener no unmount.
+- **Uso**: Substituiu lógica inline no `ProfileMenu` por hook reutilizável.
+
+#### `useChat.ts` [NOVO]
+Hook de chat IA com respostas simuladas e streaming:
+- **Respostas Inteligentes**: Detecção por palavras-chave para 5 domínios de QA (bugs, testes BDD, segurança, performance, geral).
+- **Streaming Simulado**: Renderização palavra a palavra com delays de 30–70ms.
+- **API**: `sendMessage()`, `resetChat()`, estados de `isLoading` e `error`.
+- **Abort**: Suporte a cancelamento de respostas em andamento.
+
 ---
 
 ## 🛣️ Rotas e Páginas
@@ -297,11 +449,14 @@ Modal de confirmação crítica com:
 |------|-----------|--------|
 | `/login` | Login com suporte a tema adaptativo | ✅ Completo |
 | `/agents` | Seleção de Agentes especializados | ✅ Completo |
-| `/chat` | Área de trabalho (Workspace) | ✅ Completo |
+| `/chat` | Área de trabalho (Workspace) com Chat IA | ✅ Completo |
+| `/dashboard` | Painel principal com métricas e economia | ✅ Completo |
 | `/profile` | Edição de perfil e sincronização global | ✅ Completo |
 | `/billing` | Planos, Modais e Faturamento | ✅ Completo |
 | `/settings` | Preferências, tema, idioma e notificações | ✅ Completo |
 | `/security` | Segurança, 2FA e Senha | ✅ Completo |
+| `/help` | Central de Ajuda com busca e categorias | ✅ Completo |
+| `/contact` | Página de Contato com formulário e FAQ | ✅ Completo |
 
 ---
 
@@ -362,6 +517,15 @@ O projeto implementa uma estratégia de tratamento de erros em múltiplas camada
 - Items de menu do `ProfileMenu` movidos para constantes fora do componente.
 - Remoção de imports não utilizados e comentários desnecessários.
 
+### Refatoração do Chat [NOVO]
+- Lógica de mensagens extraída para hook customizado `useChat` com tipagens em `types/chat-types.ts`.
+- `ChatWindow` refatorado com textarea auto-resize, sistema de anexos e integração ao hook.
+- Respostas simuladas com streaming palavra a palavra para 5 domínios de QA.
+
+### Refatoração de Agentes [NOVO]
+- `AgentCard` com funcionalidade de restart, estados visuais e badges de prioridade.
+- `FilterBar` com melhorias na interface de filtragem.
+
 ---
 
 ## 🔒 Segurança [NOVO]
@@ -382,6 +546,7 @@ O `next.config.ts` agora inclui headers de segurança para todas as rotas:
 - `ChangePasswordModal` e `PhotoUploadModal` agora possuem `role="dialog"`, `aria-modal="true"` e `aria-label`.
 - Suporte a fechamento por tecla `Escape` em ambos os modais.
 - Botões de fechar com `aria-label="Fechar modal"`.
+- `ScheduleDemoModal` e `SupportModal` seguem o mesmo padrão de acessibilidade com backdrop click, Escape e bloqueio de scroll. [NOVO]
 
 ---
 
