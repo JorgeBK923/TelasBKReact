@@ -71,9 +71,9 @@ export function Navbar() {
                     </Link>
                 </div>
 
-                <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2 rounded-lg transition-colors shadow-lg shadow-blue-600/20">
+                <Link className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2 rounded-lg transition-colors shadow-lg shadow-blue-600/20" href="/register">
                     Começar Grátis
-                </button>
+                </Link>
             </div>
         </nav>
     );

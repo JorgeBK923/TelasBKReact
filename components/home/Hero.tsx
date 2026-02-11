@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ArrowRight, PlayCircle, Loader2, CheckCircle } from 'lucide-react';
 
 export function Hero() {
@@ -53,10 +54,10 @@ export function Hero() {
 
                     {/* CTA buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                        <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white text-base font-bold h-12 px-8 rounded-lg shadow-lg shadow-blue-600/25 transition-all flex items-center justify-center gap-2">
+                        <Link href="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white text-base font-bold h-12 px-8 rounded-lg shadow-lg shadow-blue-600/25 transition-all flex items-center justify-center gap-2">
                             Começar Grátis
                             <ArrowRight className="w-4 h-4" />
-                        </button>
+                        </Link>
                         <button className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white text-base font-medium h-12 px-6 rounded-lg dark:border-white/5 transition-colors flex items-center justify-center gap-2">
                             <PlayCircle className="w-4 h-4" />
                             Ver Demo

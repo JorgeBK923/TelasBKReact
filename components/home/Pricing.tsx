@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Check } from 'lucide-react';
 
 const plans = [
@@ -7,6 +8,7 @@ const plans = [
         price: 'R$0',
         period: '/mês',
         buttonText: 'Criar Conta',
+        buttonLink: '/register',
         buttonStyle: 'border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5',
         features: [
             '50 Stories/mês',
@@ -23,6 +25,7 @@ const plans = [
         price: 'R$299',
         period: '/mês',
         buttonText: 'Começar Trial Grátis',
+        buttonLink: '/register',
         buttonStyle: 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/25',
         features: [
             'Stories Ilimitadas',
@@ -40,6 +43,7 @@ const plans = [
         price: 'Sob Consulta',
         period: '',
         buttonText: 'Falar com Vendas',
+        buttonLink: '/contact',
         buttonStyle: 'border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5',
         features: [
             'Tudo do Startup',
@@ -83,9 +87,9 @@ export function Pricing() {
                                 {plan.period && <span className="text-slate-500 mb-1">{plan.period}</span>}
                             </div>
 
-                            <button className={`w-full py-3 rounded-lg font-bold transition-colors ${plan.buttonStyle}`}>
+                            <Link href={plan.buttonLink} className={`w-full py-3 rounded-lg font-bold transition-colors text-center block ${plan.buttonStyle}`}>
                                 {plan.buttonText}
-                            </button>
+                            </Link>
 
                             <ul className="space-y-3 text-sm text-slate-600 dark:text-gray-300">
                                 {plan.features.map((feature) => (

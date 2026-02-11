@@ -40,7 +40,14 @@ Projeto-BugKillers/
 │   ├── (agents)/                 # Seleção de Agentes [NOVO]
 │   │   └── agents/               # Galeria de Agentes
 │   ├── (auth)/                   # Grupo de autenticação [REFATORADO]
-│   │   └── login/                # Página de Login com Tema Dinâmico
+│   │   ├── login/                # Página de Login com Tema Dinâmico
+│   │   └── register/             # [NOVO] Página de Cadastro (split-screen)
+│   ├── (onboarding)/             # [NOVO] Fluxo de Onboarding pós-cadastro
+│   │   ├── layout.tsx            # Layout compartilhado do onboarding
+│   │   ├── plans/                # Seleção de plano (Starter/Pro/Enterprise)
+│   │   ├── payment/              # Pagamento com cartão de crédito
+│   │   ├── personalization/      # Personalização de workspace e objetivos
+│   │   └── setup/                # Provisionamento do ambiente com timeline
 │   ├── (dashboard)/              # Grupo de rotas do Dashboard
 │   │   ├── layout.tsx            # Layout com Header reativo
 │   │   ├── dashboard/            # Página principal do painel [REFATORADO]
@@ -89,7 +96,7 @@ Projeto-BugKillers/
 │   │
 │   ├── agents/                   # AgentCard, FilterBar [REFATORADO]
 │   ├── chat/                     # ChatSidebar, ChatWindow, MessageBubble [REFATORADO]
-│   ├── auth/                     # LoginForm, SocialButtons [REFATORADO]
+│   ├── auth/                     # LoginForm, RegisterForm, SocialButtons [REFATORADO]
 │   ├── contact/                  # [NOVO] Componentes da página de Contato
 │   │   ├── ContactHero.tsx       # Hero da página de contato
 │   │   ├── ContactForm.tsx       # Formulário de contato com validação
@@ -98,6 +105,16 @@ Projeto-BugKillers/
 │   │   ├── DemoCTA.tsx           # CTA para agendar demonstração
 │   │   ├── ScheduleDemoModal.tsx # Modal de agendamento de demo
 │   │   └── index.ts              # Exports centralizados
+│   │
+│   ├── onboarding/               # [NOVO] Componentes do fluxo de Onboarding
+│   │   ├── OnboardingHeader.tsx  # Header compartilhado (logo + tema)
+│   │   ├── PlanCard.tsx          # Card de plano reutilizável (3 variantes)
+│   │   ├── PaymentForm.tsx       # Formulário de cartão com formatação
+│   │   ├── OrderSummary.tsx      # Resumo do pedido com breakdown
+│   │   ├── PersonalizationForm.tsx # Form de workspace, papel e objetivos
+│   │   ├── ObjectiveCard.tsx     # Radio card com ícone para objetivos
+│   │   ├── SetupProgress.tsx     # Barra de progresso animada (shimmer)
+│   │   └── SetupTimeline.tsx     # Timeline de provisionamento (3 estados)
 │   │
 │   ├── help/                     # [NOVO] Componentes da Central de Ajuda
 │   │   ├── HelpHero.tsx          # Busca e chips de tópicos populares
@@ -134,12 +151,6 @@ Projeto-BugKillers/
 │   └── help-data.ts              # [NOVO] Categorias e artigos da Central de Ajuda
 ├── providers/                    # Context Providers
 │   └── ThemeProvider.tsx         # Provider do next-themes
-│
-├── drafts/                       # Protótipos HTML originais
-│   ├── DraftDados.tsx            # Design da página de Dados
-│   ├── DraftIntegracoes.tsx      # Design da página de Integrações
-│   ├── DraftPreferencia.tsx      # Design da página de Preferências
-│   └── DraftSeguranca.tsx        # Design da página de Segurança
 │
 ├── public/                       # Arquivos estáticos
 │   └── default-avatar.svg       # [NOVO] Avatar padrão local (SVG)
@@ -369,6 +380,91 @@ Modal de agendamento de demonstração em 2 etapas:
 - **Sucesso**: Confirmação com horário em BRT e duração de 15 minutos.
 - **Acessibilidade**: Fechamento por Escape, backdrop click e bloqueio de scroll.
 
+### 📝 Cadastro e Onboarding [NOVO]
+
+#### `RegisterForm.tsx`
+Formulário de criação de conta com validação e feedback visual:
+- **Campos**: Nome Completo (`User`), E-mail Corporativo (`Mail`), Senha (`Lock`).
+- **Força da Senha**: Indicador de 4 barras com cores progressivas (vermelho → laranja → amarelo → verde).
+- **Visibilidade**: Toggle de exibir/ocultar senha com ícones `Eye`/`EyeOff`.
+- **Termos**: Checkbox obrigatório para aceitar Termos e Política de Privacidade.
+- **Submit**: Estados idle → loading (spinner "Criando conta...") com bloqueio do formulário.
+
+#### `SocialButtons.tsx` [REFATORADO]
+Botões de autenticação social reutilizáveis:
+- **Prop `action`**: Aceita `'login'` (padrão) ou `'register'` para alternar entre "Entrar com" e "Cadastrar com".
+- **Provedores**: Google (com logo oficial SVG) e GitHub.
+
+#### `register/page.tsx`
+Página de cadastro com layout split-screen:
+- **Painel Esquerdo** (desktop): Hero com imagem de fundo, texto motivacional e ícones de tecnologias (JS, Python, Jira).
+- **Painel Direito**: Logo, formulário de cadastro com `SocialButtons` + `RegisterForm`.
+- **Responsivo**: Painel esquerdo oculto em mobile (`hidden lg:flex`).
+
+#### `OnboardingHeader.tsx`
+Header compartilhado para todas as páginas do fluxo de onboarding:
+- **Props**: `sticky` (posição fixa no topo com backdrop-blur) e `bordered` (borda inferior).
+- **Tema**: Toggle otimizado com `useTheme()` e proteção de hidratação (`mounted`).
+
+#### `PlanCard.tsx`
+Card de plano reutilizável com 3 variantes visuais:
+- **Variantes**: `outline` (borda primary), `filled` (fundo primary) e `subtle` (borda neutra).
+- **Popular**: Badge "Mais Popular" flutuante com elevação visual (`-translate-y-4`).
+- **Badge**: Tag opcional de destaque (ex: "Mais Escolhido").
+- **Features**: Lista de benefícios com ícones `CheckCircle`.
+
+#### `plans/page.tsx`
+Página de seleção de plano com 3 tiers:
+- **Starter**: R$ 49/mês — 1 agente, 50 testes, relatórios básicos.
+- **Professional**: R$ 80/mês — 5 agentes, testes ilimitados, CI/CD completa. Destacado como "Mais Popular".
+- **Enterprise**: Sob consulta — agentes ilimitados, deploy on-premise, SSO/RBAC.
+- **Trust Section**: Logos de empresas parceiras ("Confiado por times de engenharia inovadores").
+
+#### `PaymentForm.tsx`
+Formulário de pagamento com formatação inteligente de inputs:
+- **Campos**: Nome no Cartão, Número (formatação automática 0000 0000 0000 0000), Validade MM/AA e CVV.
+- **Ícones**: `CreditCard` no número, `HelpCircle` no CVV.
+- **Segurança**: Aviso de criptografia 256 bits com ícone `Lock`.
+- **Submit**: Estados idle → loading (spinner "Processando...").
+
+#### `OrderSummary.tsx`
+Resumo do pedido com breakdown de preços:
+- **Plano**: Nome, tipo de cobrança e preço destacado.
+- **Incluso**: Lista de benefícios com `CheckCircle`.
+- **Breakdown**: Subtotal, impostos e total a pagar com separadores visuais.
+- **Sticky**: Fixo na lateral em telas grandes (`lg:sticky lg:top-28`).
+
+#### `PersonalizationForm.tsx`
+Formulário de personalização de uso com 3 campos:
+- **Workspace**: Input de texto com ícone `LayoutGrid`.
+- **Papel**: Select com opções QA Engineer, Developer, Product Manager, CTO/Tech Lead.
+- **Objetivo**: Radio cards visuais (`ObjectiveCard`) — Automação de Testes, Gestão de Bugs, Monitoramento.
+
+#### `ObjectiveCard.tsx`
+Card de seleção tipo radio com feedback visual:
+- **Ícone Dinâmico**: Aceita qualquer ícone lucide-react via prop `icon`.
+- **Estados**: Default (borda neutra), hover (borda azul), checked (borda primary + fundo highlight + `CheckCircle`).
+
+#### `SetupProgress.tsx`
+Barra de progresso animada para provisionamento:
+- **Shimmer**: Efeito de brilho animado sobre a barra de progresso.
+- **Porcentagem**: Exibida ao lado do label "Status da Instalação".
+- **Glow**: Sombra azul na barra (`shadow-[0_0_15px_rgba(0,51,255,0.5)]`).
+
+#### `SetupTimeline.tsx`
+Timeline de provisionamento com 3 estados visuais:
+- **Complete**: Círculo verde com `Check` — passos concluídos.
+- **Active**: Círculo primary com `Loader2` (spinning) — passo em andamento com descrição pulsante.
+- **Pending**: Círculo cinza com `Circle` ou `Flag` — passos futuros (opacity reduzida).
+- **Linha Vertical**: Conecta todos os steps visualmente.
+
+#### `setup/page.tsx`
+Página de provisionamento do ambiente:
+- **Hero**: Ícone `Bot` animado (bounce + ping + pulse) com texto "Preparando seu ambiente...".
+- **Progress Card**: `SetupProgress` (72%) + `SetupTimeline` com 5 etapas (pagamento → workspace → agente → servidores → pronto).
+- **Botão**: "Acessar Workspace" desabilitado até conclusão, habilitado com estilo primary + glow.
+- **Suporte**: Link inferior "Problemas com a configuração? Contate o suporte".
+
 ### ❓ Central de Ajuda [NOVO]
 
 #### `HelpHero.tsx`
@@ -448,6 +544,11 @@ Hook de chat IA com respostas simuladas e streaming:
 | Rota | Descrição | Status |
 |------|-----------|--------|
 | `/login` | Login com suporte a tema adaptativo | ✅ Completo |
+| `/register` | Cadastro com split-screen e força de senha | ✅ Completo |
+| `/plans` | Seleção de plano (Starter/Pro/Enterprise) | ✅ Completo |
+| `/payment` | Pagamento seguro com resumo do pedido | ✅ Completo |
+| `/personalization` | Personalização de workspace e objetivos | ✅ Completo |
+| `/setup` | Provisionamento do ambiente com timeline | ✅ Completo |
 | `/agents` | Seleção de Agentes especializados | ✅ Completo |
 | `/chat` | Área de trabalho (Workspace) com Chat IA | ✅ Completo |
 | `/dashboard` | Painel principal com métricas e economia | ✅ Completo |
