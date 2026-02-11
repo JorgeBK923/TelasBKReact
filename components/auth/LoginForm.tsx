@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { CURRENT_USER } from '@/constants/user';
 
 // Mock credentials
@@ -98,7 +99,7 @@ export function LoginForm() {
                 </div>
             </div>
             <div className="flex justify-end">
-                <a className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">Esqueceu a senha?</a>
+                <Link className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="/forgot-password">Esqueceu a senha?</Link>
             </div>
             <button
                 className={`flex w-full justify-center items-center gap-2 rounded-lg bg-primary py-3 px-4 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white ${isLoading ? "opacity-90 cursor-wait" : "hover:brightness-110 hover:shadow-primary/40 active:scale-[0.98]"

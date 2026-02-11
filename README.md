@@ -40,8 +40,15 @@ Projeto-BugKillers/
 │   ├── (agents)/                 # Seleção de Agentes [NOVO]
 │   │   └── agents/               # Galeria de Agentes
 │   ├── (auth)/                   # Grupo de autenticação [REFATORADO]
-│   │   ├── login/                # Página de Login com Tema Dinâmico
-│   │   └── register/             # [NOVO] Página de Cadastro (split-screen)
+│   │   ├── login/                # Página de Login com Tema Dinâmico [REFATORADO]
+│   │   ├── register/             # Página de Cadastro (split-screen)
+│   │   ├── forgot-password/      # [NOVO] Fluxo de recuperação de senha
+│   │   │   ├── page.tsx          # Formulário de email
+│   │   │   └── link-sent/page.tsx # Confirmação de envio
+│   │   └── reset-password/       # [NOVO] Redefinição de senha
+│   │       ├── page.tsx          # Criar nova senha (com ?token=xxx)
+│   │       ├── success/page.tsx  # Sucesso + auto-redirect 5s
+│   │       └── expired/page.tsx  # Link expirado
 │   ├── (onboarding)/             # [NOVO] Fluxo de Onboarding pós-cadastro
 │   │   ├── layout.tsx            # Layout compartilhado do onboarding
 │   │   ├── plans/                # Seleção de plano (Starter/Pro/Enterprise)
@@ -96,7 +103,16 @@ Projeto-BugKillers/
 │   │
 │   ├── agents/                   # AgentCard, FilterBar [REFATORADO]
 │   ├── chat/                     # ChatSidebar, ChatWindow, MessageBubble [REFATORADO]
-│   ├── auth/                     # LoginForm, RegisterForm, SocialButtons [REFATORADO]
+│   ├── auth/                     # Componentes de autenticação [REFATORADO]
+│   │   ├── LoginForm.tsx         # Formulário de login [REFATORADO]
+│   │   ├── RegisterForm.tsx      # Formulário de cadastro [REFATORADO]
+│   │   ├── SocialButtons.tsx     # Botões sociais (Google, GitHub)
+│   │   ├── AuthCardShell.tsx     # [NOVO] Shell reutilizável (bg, overlay, tema, card, logo)
+│   │   ├── ForgotPasswordForm.tsx # [NOVO] Input de email + enviar link
+│   │   ├── LinkSentCard.tsx      # [NOVO] Confirmação com email mascarado e cooldown
+│   │   ├── ResetPasswordForm.tsx # [NOVO] Nova senha com strength bar e checklist
+│   │   ├── ResetSuccessCard.tsx  # [NOVO] Sucesso com countdown auto-redirect
+│   │   └── ResetExpiredCard.tsx  # [NOVO] Link expirado com reenvio
 │   ├── contact/                  # [NOVO] Componentes da página de Contato
 │   │   ├── ContactHero.tsx       # Hero da página de contato
 │   │   ├── ContactForm.tsx       # Formulário de contato com validação
@@ -138,9 +154,12 @@ Projeto-BugKillers/
 │       ├── ErrorBoundary.tsx     # Captura de erros em componentes
 │       └── Toggle.tsx            # Switch toggle acessível
 │
+├── lib/                          # [NOVO] Utilitários compartilhados
+│   └── password-utils.ts         # getPasswordStrength, strengthColors, strengthLabels
+│
 ├── hooks/                        # Hooks customizados
 │   ├── useClickOutside.ts        # Detecta cliques fora de elementos
-│   └── useChat.ts                # [NOVO] Hook de chat IA com streaming simulado
+│   └── useChat.ts                # Hook de chat IA com streaming simulado
 │
 ├── types/                        # [NOVO] Tipagens TypeScript
 │   └── chat-types.ts             # Interfaces de ChatMessage e Conversation
@@ -382,10 +401,10 @@ Modal de agendamento de demonstração em 2 etapas:
 
 ### 📝 Cadastro e Onboarding [NOVO]
 
-#### `RegisterForm.tsx`
+#### `RegisterForm.tsx` [REFATORADO]
 Formulário de criação de conta com validação e feedback visual:
 - **Campos**: Nome Completo (`User`), E-mail Corporativo (`Mail`), Senha (`Lock`).
-- **Força da Senha**: Indicador de 4 barras com cores progressivas (vermelho → laranja → amarelo → verde).
+- **Força da Senha**: Indicador de 4 barras com cores progressivas (vermelho → laranja → amarelo → verde). Lógica extraída para `lib/password-utils.ts`. [REFATORADO]
 - **Visibilidade**: Toggle de exibir/ocultar senha com ícones `Eye`/`EyeOff`.
 - **Termos**: Checkbox obrigatório para aceitar Termos e Política de Privacidade.
 - **Submit**: Estados idle → loading (spinner "Criando conta...") com bloqueio do formulário.
@@ -394,6 +413,72 @@ Formulário de criação de conta com validação e feedback visual:
 Botões de autenticação social reutilizáveis:
 - **Prop `action`**: Aceita `'login'` (padrão) ou `'register'` para alternar entre "Entrar com" e "Cadastrar com".
 - **Provedores**: Google (com logo oficial SVG) e GitHub.
+
+### 🔑 Recuperação de Senha [NOVO]
+
+Fluxo completo de recuperação de senha em 5 etapas, convertido de protótipos HTML para React/Next.js com TypeScript, dark mode e acessibilidade.
+
+**Fluxo do Usuário**: Login "Esqueceu a senha?" → `/forgot-password` → `/forgot-password/link-sent` → `/reset-password?token=xxx` → `/reset-password/success` ou `/reset-password/expired`.
+
+#### `AuthCardShell.tsx` [NOVO]
+Shell reutilizável compartilhado entre Login e todas as páginas de recuperação de senha:
+- **Background**: Imagem de fundo com overlay translúcido e backdrop-blur.
+- **Tema**: Toggle light/dark com ícones `Sun`/`Moon` e animações de rotação.
+- **Card**: Container centralizado com bordas, sombra e transições de cor.
+- **Logo**: BugKillers com ícone `Bug`.
+- **Reutilização**: Login refatorado para usar este componente, eliminando duplicação de layout.
+
+#### `ForgotPasswordForm.tsx` [NOVO]
+Formulário de solicitação de link de recuperação:
+- **Input**: Campo de email com ícone `Mail` e validação.
+- **Mascaramento**: Função `maskEmail()` — `nome@empresa.com` → `no***@empresa.com`.
+- **Submit**: Estados idle → loading (spinner "Enviando...") → redirect para `/forgot-password/link-sent`.
+- **Navegação**: Link "Voltar para o Login" com ícone `ArrowLeft` e animação hover.
+
+#### `LinkSentCard.tsx` [NOVO]
+Card de confirmação de envio do link:
+- **Email Mascarado**: Exibe o email mascarado recebido via query string (`useSearchParams`).
+- **Badge**: Indicador "O link expira em 24 horas" com ícone `Timer`.
+- **Reenvio com Cooldown**: Botão "Reenviar link" com timer de 60 segundos client-side; botão desabilitado durante cooldown.
+- **Abrir E-mail**: Botão principal com `href="mailto:"`.
+- **Suspense**: Página envolvida em `<Suspense>` para `useSearchParams`.
+
+#### `ResetPasswordForm.tsx` [NOVO]
+Formulário de criação de nova senha com validação completa:
+- **Campos**: Nova senha e Confirmar senha, ambos com toggle de visibilidade (`Eye`/`EyeOff`).
+- **Strength Bar**: 4 segmentos com cores progressivas (vermelho → laranja → amarelo → verde) e label textual ("Muito fraca", "Fraca", "Média", "Forte"). Usa `getPasswordStrength` de `lib/password-utils.ts`.
+- **Checklist**: Indicadores visuais com ícones `Check`/`Circle` — "Mínimo 8 caracteres" e "Senhas coincidem".
+- **Validação de Token**: Lido via `useSearchParams()`; se ausente, redireciona para `/reset-password/expired`.
+- **Botão Desabilitado**: Submit bloqueado até: 8+ caracteres + senhas coincidem + strength ≥ 2.
+- **Suspense**: Página envolvida em `<Suspense>` para `useSearchParams`.
+
+#### `ResetSuccessCard.tsx` [NOVO]
+Card de sucesso na redefinição de senha:
+- **Ícone**: Círculo verde com `CheckCircle` e anéis decorativos.
+- **Countdown**: Timer de 5 segundos com auto-redirect para `/login`.
+- **Botão**: "Acessar BugKillers" com link direto para login.
+- **Feedback**: Texto "Redirecionando em X segundos..." atualizado em tempo real.
+
+#### `ResetExpiredCard.tsx` [NOVO]
+Card de link expirado:
+- **Ícone**: Círculo amber com `TimerOff` e anéis decorativos.
+- **Ação Principal**: Botão "Solicitar novo link" direciona para `/forgot-password`.
+- **Navegação**: Link "Voltar para o Login" com ícone `ArrowLeft`.
+
+#### `lib/password-utils.ts` [NOVO]
+Utilitário compartilhado para validação de força de senha:
+- **`getPasswordStrength()`**: Retorna 0–4 baseado em: 8+ chars, maiúsculas, números, caracteres especiais.
+- **`strengthColors`**: Array de classes Tailwind para as 4 barras de força.
+- **`strengthLabels`**: Labels em pt-BR ("Muito fraca", "Fraca", "Média", "Forte").
+- **Reutilização**: Importado por `RegisterForm` e `ResetPasswordForm`, eliminando duplicação.
+
+#### `login/page.tsx` [REFATORADO]
+Página de login refatorada para usar `AuthCardShell`:
+- **Antes**: Layout completo inline (background, overlay, theme toggle, card, logo).
+- **Depois**: Apenas conteúdo interno (título, `SocialButtons`, divisor, `LoginForm`, link de cadastro) envolvido em `AuthCardShell`.
+
+#### `LoginForm.tsx` [REFATORADO]
+- **Link "Esqueceu a senha?"**: Migrado de `<a href="#">` para `<Link href="/forgot-password">` com import do `next/link`.
 
 #### `register/page.tsx`
 Página de cadastro com layout split-screen:
@@ -545,6 +630,11 @@ Hook de chat IA com respostas simuladas e streaming:
 |------|-----------|--------|
 | `/login` | Login com suporte a tema adaptativo | ✅ Completo |
 | `/register` | Cadastro com split-screen e força de senha | ✅ Completo |
+| `/forgot-password` | Solicitar link de recuperação de senha | ✅ Completo |
+| `/forgot-password/link-sent` | Confirmação de envio com reenvio e cooldown | ✅ Completo |
+| `/reset-password` | Criar nova senha com validação de token | ✅ Completo |
+| `/reset-password/success` | Sucesso com countdown e auto-redirect | ✅ Completo |
+| `/reset-password/expired` | Link expirado com reenvio | ✅ Completo |
 | `/plans` | Seleção de plano (Starter/Pro/Enterprise) | ✅ Completo |
 | `/payment` | Pagamento seguro com resumo do pedido | ✅ Completo |
 | `/personalization` | Personalização de workspace e objetivos | ✅ Completo |
@@ -659,7 +749,7 @@ O projeto usa `next-themes` para gerenciar os temas.
 
 1. **ThemeProvider** em `providers/ThemeProvider.tsx` envolve a aplicação (integrado ao `UserProvider`).
 2. **Hook `useTheme()`** usado no Header e na Página de Login para toggle.
-3. **Página de Login**: Totalmente refatorada para suportar transições de tema (overlay, backgrounds e backgrounds de containers dinâmicos).
+3. **Páginas de Autenticação**: Login e fluxo de recuperação de senha usam `AuthCardShell` com transições de tema (overlay, backgrounds e containers dinâmicos). [REFATORADO]
 4. **Tailwind** usa variante `dark:` para estilos alternativos.
 
 ---
