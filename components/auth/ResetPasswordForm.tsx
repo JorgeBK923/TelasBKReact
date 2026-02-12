@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Eye, EyeOff, Check, Circle, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Check, Circle, Loader2, AlertCircle } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { getPasswordStrength, strengthColors, strengthLabels } from '@/lib/password-utils';
 
@@ -15,6 +15,7 @@ export function ResetPasswordForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     // Redirect to expired if no token
     if (!token) {
@@ -29,14 +30,39 @@ export function ResetPasswordForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!canSubmit) return;
+        setError(null);
+
+        if (!password.trim() || !confirmPassword.trim()) {
+            setError('Preencha todos os campos.');
+            return;
+        }
+
+        if (!hasMinLength) {
+            setError('A senha deve ter pelo menos 8 caracteres.');
+            return;
+        }
+
+        if (!passwordsMatch) {
+            setError('As senhas não coincidem.');
+            return;
+        }
+
+        if (strength < 2) {
+            setError('A senha é muito fraca. Use letras, números e caracteres especiais.');
+            return;
+        }
 
         setIsLoading(true);
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        router.push('/reset-password/success');
+            router.push('/reset-password/success');
+        } catch {
+            setError('Não foi possível redefinir a senha. Tente novamente.');
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -50,6 +76,13 @@ export function ResetPasswordForm() {
                 </p>
             </div>
 
+            {error && (
+                <div className="flex items-center gap-2 text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-xl border border-red-100 dark:border-red-500/20 animate-in slide-in-from-top-2 duration-200 mb-4">
+                    <AlertCircle className="size-4 flex-shrink-0" />
+                    <span className="text-xs font-medium">{error}</span>
+                </div>
+            )}
+
             <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="space-y-4">
                     {/* New Password */}
@@ -59,13 +92,13 @@ export function ResetPasswordForm() {
                         </label>
                         <div className="relative">
                             <input
-                                className="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 py-3 pl-4 pr-12 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                                className={`block w-full rounded-lg border ${error ? 'border-red-300 dark:border-red-500/50' : 'border-slate-300 dark:border-slate-600'} bg-gray-50 dark:bg-slate-800 py-3 pl-4 pr-12 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors`}
                                 id="new-password"
                                 name="new-password"
                                 placeholder="••••••••"
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => { setPassword(e.target.value); setError(null); }}
                                 disabled={isLoading}
                             />
                             <button
@@ -86,13 +119,13 @@ export function ResetPasswordForm() {
                         </label>
                         <div className="relative">
                             <input
-                                className="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 py-3 pl-4 pr-12 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                                className={`block w-full rounded-lg border ${error ? 'border-red-300 dark:border-red-500/50' : 'border-slate-300 dark:border-slate-600'} bg-gray-50 dark:bg-slate-800 py-3 pl-4 pr-12 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors`}
                                 id="confirm-password"
                                 name="confirm-password"
                                 placeholder="••••••••"
                                 type={showConfirmPassword ? 'text' : 'password'}
                                 value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onChange={(e) => { setConfirmPassword(e.target.value); setError(null); }}
                                 disabled={isLoading}
                             />
                             <button
@@ -158,12 +191,10 @@ export function ResetPasswordForm() {
 
                 <button
                     className={`flex w-full justify-center items-center gap-2 rounded-lg bg-primary py-3 px-4 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 mt-8 ${
-                        isLoading ? 'opacity-90 cursor-wait' :
-                        canSubmit ? 'hover:brightness-110 hover:shadow-primary/40 active:scale-[0.98]' :
-                        'opacity-50 cursor-not-allowed'
+                        isLoading ? 'opacity-90 cursor-wait' : 'hover:brightness-110 hover:shadow-primary/40 active:scale-[0.98]'
                     }`}
                     type="submit"
-                    disabled={!canSubmit || isLoading}
+                    disabled={isLoading}
                 >
                     {isLoading ? (
                         <>

@@ -4,7 +4,7 @@ import { UserProfileCard } from "@/components/dashboard/UserProfileCard";
 import { ThemeLanguageCard } from "@/components/dashboard/settings/ThemeLanguageCard";
 import { PushNotificationsCard } from "@/components/dashboard/settings/PushNotificationsCard";
 import { EmailNotificationsCard } from "@/components/dashboard/settings/EmailNotificationsCard";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 
@@ -31,6 +31,7 @@ export default function SettingsPage() {
     const [mounted, setMounted] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const [language, setLanguage] = useState("pt-BR");
     const [pushEnabled, setPushEnabled] = useState(true);
@@ -40,13 +41,19 @@ export default function SettingsPage() {
         setMounted(true);
     }, []);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setIsSaving(true);
-        setTimeout(() => {
+        setError(null);
+
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 1500));
             setIsSaving(false);
             setShowSuccessToast(true);
             setTimeout(() => setShowSuccessToast(false), 3000);
-        }, 1500);
+        } catch {
+            setIsSaving(false);
+            setError("Não foi possível salvar as preferências. Tente novamente.");
+        }
     };
 
     const handleCancel = () => {
@@ -97,6 +104,13 @@ export default function SettingsPage() {
                     />
                 </div>
             </div>
+
+            {error && (
+                <div className="flex items-center gap-2 text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-xl border border-red-100 dark:border-red-500/20 animate-in slide-in-from-top-2 duration-200">
+                    <AlertCircle className="size-4 flex-shrink-0" />
+                    <span className="text-sm font-medium">{error}</span>
+                </div>
+            )}
 
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10 mt-2">
                 <button

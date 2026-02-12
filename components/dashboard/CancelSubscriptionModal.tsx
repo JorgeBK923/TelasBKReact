@@ -22,15 +22,28 @@ export function CancelSubscriptionModal({ isOpen, onClose }: CancelSubscriptionM
         { id: "other", label: "Outro motivo" },
     ];
 
-    const handleContinue = () => {
+    const [error, setError] = useState<string | null>(null);
+
+    const handleContinue = async () => {
         if (step === "confirm") {
             setStep("reason");
         } else if (step === "reason") {
+            if (!selectedReason) {
+                setError("Selecione um motivo para continuar.");
+                return;
+            }
+
             setStep("processing");
-            // Simulate API call
-            setTimeout(() => {
+            setError(null);
+
+            try {
+                // Simulate API call
+                await new Promise((resolve) => setTimeout(resolve, 2000));
                 setStep("success");
-            }, 2000);
+            } catch {
+                setStep("reason");
+                setError("Erro ao processar o cancelamento. Tente novamente.");
+            }
         }
     };
 
@@ -127,6 +140,12 @@ export function CancelSubscriptionModal({ isOpen, onClose }: CancelSubscriptionM
 
                     {step === "reason" && (
                         <div className="space-y-4">
+                            {error && (
+                                <div className="flex items-center gap-2 text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-xl border border-red-100 dark:border-red-500/20">
+                                    <AlertTriangle className="size-4 flex-shrink-0" />
+                                    <span className="text-xs font-medium">{error}</span>
+                                </div>
+                            )}
                             <p className="text-slate-600 dark:text-slate-400">
                                 Nos ajude a melhorar. Qual o principal motivo do cancelamento?
                             </p>
@@ -212,8 +231,7 @@ export function CancelSubscriptionModal({ isOpen, onClose }: CancelSubscriptionM
                         </button>
                         <button
                             onClick={handleContinue}
-                            disabled={step === "reason" && !selectedReason}
-                            className="px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white text-sm font-semibold transition-colors disabled:cursor-not-allowed"
+                            className="px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition-colors"
                         >
                             {step === "confirm" ? "Continuar" : "Confirmar Cancelamento"}
                         </button>

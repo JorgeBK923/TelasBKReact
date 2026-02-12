@@ -38,35 +38,41 @@ Plataforma web desenvolvida com **Next.js 16**, **React 19** e **Tailwind CSS 4*
 Projeto-BugKillers/
 ├── app/                          # App Router do Next.js
 │   ├── (agents)/                 # Seleção de Agentes [NOVO]
-│   │   └── agents/               # Galeria de Agentes
+│   │   ├── agents/               # Galeria de Agentes
+│   │   └── error.tsx             # [NOVO] Página de erro do grupo Agents
 │   ├── (auth)/                   # Grupo de autenticação [REFATORADO]
 │   │   ├── login/                # Página de Login com Tema Dinâmico [REFATORADO]
 │   │   ├── register/             # Página de Cadastro (split-screen)
 │   │   ├── forgot-password/      # [NOVO] Fluxo de recuperação de senha
 │   │   │   ├── page.tsx          # Formulário de email
 │   │   │   └── link-sent/page.tsx # Confirmação de envio
-│   │   └── reset-password/       # [NOVO] Redefinição de senha
-│   │       ├── page.tsx          # Criar nova senha (com ?token=xxx)
-│   │       ├── success/page.tsx  # Sucesso + auto-redirect 5s
-│   │       └── expired/page.tsx  # Link expirado
+│   │   ├── reset-password/       # [NOVO] Redefinição de senha
+│   │   │   ├── page.tsx          # Criar nova senha (com ?token=xxx)
+│   │   │   ├── success/page.tsx  # Sucesso + auto-redirect 5s
+│   │   │   └── expired/page.tsx  # Link expirado
+│   │   └── error.tsx             # [NOVO] Página de erro do grupo Auth
 │   ├── (onboarding)/             # [NOVO] Fluxo de Onboarding pós-cadastro
 │   │   ├── layout.tsx            # Layout compartilhado do onboarding
 │   │   ├── plans/                # Seleção de plano (Starter/Pro/Enterprise)
 │   │   ├── payment/              # Pagamento com cartão de crédito
 │   │   ├── personalization/      # Personalização de workspace e objetivos
-│   │   └── setup/                # Provisionamento do ambiente com timeline
+│   │   ├── setup/                # Provisionamento do ambiente com timeline
+│   │   └── error.tsx             # [NOVO] Página de erro do grupo Onboarding
 │   ├── (dashboard)/              # Grupo de rotas do Dashboard
 │   │   ├── layout.tsx            # Layout com Header reativo
 │   │   ├── dashboard/            # Página principal do painel [REFATORADO]
 │   │   ├── help/                 # [NOVO] Central de Ajuda
 │   │   ├── profile/              # Página de perfil [REFATORADO]
 │   │   ├── settings/             # Página de preferências [REFATORADO]
-│   │   └── ...                   # Páginas de billing, security, etc
+│   │   ├── security/             # Página de segurança [REFATORADO]
+│   │   ├── error.tsx             # [NOVO] Página de erro do grupo Dashboard
+│   │   └── ...                   # Páginas de billing, usage, etc
 │   ├── (website)/                # Landing page [OTIMIZADO]
 │   │   └── contact/              # [NOVO] Página de Contato
 │   ├── (workspace)/              # Área de chat e trabalho [REFATORADO]
 │   │   ├── layout.tsx            # Sidebar azul dedicada
-│   │   └── chat/                 # Ambiente de Chat IA [REFATORADO]
+│   │   ├── chat/                 # Ambiente de Chat IA [REFATORADO]
+│   │   └── error.tsx             # [NOVO] Página de erro do grupo Workspace
 │   ├── error.tsx                 # [NOVO] Página de erro padrão
 │   ├── global-error.tsx          # [NOVO] Página de erro crítico global
 │   ├── globals.css               # Estilos globais v4
@@ -267,7 +273,13 @@ Visão geral de consumo e economia:
 - **Consumo Mensal**: Barra de progresso com execuções realizadas.
 - **Economia Estimada**: Card gradiente com horas salvas e custo evitado pela automação.
 
-### ⚙️ Preferências (Subcomponentes) [NOVO]
+### ⚙️ Preferências (Subcomponentes) [REFATORADO]
+
+#### `settings/page.tsx` [REFATORADO]
+Página de preferências com salvamento assíncrono e tratamento de erros:
+- **Async/Await**: `handleSave` migrado para `async/await` com `try/catch`. [REFATORADO]
+- **Estado de Erro**: Novo estado `error` com banner `AlertCircle` em vermelho quando falha ao salvar. [REFATORADO]
+- **Mensagem**: "Não foi possível salvar as preferências. Tente novamente." exibida com animação `slide-in-from-top-2`. [REFATORADO]
 
 #### `ThemeLanguageCard.tsx`
 Card de configuração de interface:
@@ -333,6 +345,11 @@ Interface de conversa premium:
 - **Identidade**: Mostra o avatar do usuário atual em tempo real.
 - **Imagens Otimizadas**: Migrado para `next/image`. [REFATORADO]
 
+#### `security/page.tsx` [REFATORADO]
+Página de segurança com salvamento assíncrono e tratamento de erros:
+- **Async/Await**: `handleSaveAlerts` migrado para `async/await` com `try/catch`. [REFATORADO]
+- **Erro Tratado**: Mensagem de erro ("Erro ao salvar configurações. Tente novamente.") exibida via toast em caso de falha. [REFATORADO]
+
 #### Modais de Segurança
 - **`ChangePasswordModal.tsx`**: Validação de força de senha em tempo real e confirmação. Agora com acessibilidade (`role="dialog"`, `aria-modal`, fechamento por `Escape`) e ícone `AlertTriangle` do lucide-react. [REFATORADO]
 - **`TwoFactorModal.tsx`**: Fluxo em 3 etapas (Setup QR, Verificação, Códigos de Backup).
@@ -340,15 +357,16 @@ Interface de conversa premium:
 
 #### Modais de Integrações
 - **`NewIntegrationModal.tsx`**: Galeria para novas conexões.
-- **`IntegrationConfigModal.tsx`**: Gestão de instâncias e tokens.
-- **`IntegrationDisconnectModal.tsx`**: Segurança ao remover conexões.
+- **`IntegrationConfigModal.tsx`**: Gestão de instâncias e tokens. Operações de teste e salvamento com `try/catch`, estado `saveError` e banner de erro no footer. [REFATORADO]
+- **`IntegrationDisconnectModal.tsx`**: Segurança ao remover conexões. Validação do texto de confirmação ao submeter (em vez de botão desabilitado), `try/catch` e banner de erro com `AlertTriangle`. [REFATORADO]
 - **`IntegrationNotifyModal.tsx`**: Sistema de notificação para features pendentes.
 
 #### Modais de Faturamento (Billing)
 - **`PlansCompareModal.tsx`**: Visualização lado a lado de benefícios.
 - **`ManageSubscriptionModal.tsx`**: Hub de gestão do plano atual.
-- **`UpdateCardModal.tsx`**: Interface para novos dados de pagamento.
-- **`CancelSubscriptionModal.tsx` & `PauseSubscriptionModal.tsx`**: Retenção e gestão de churn.
+- **`UpdateCardModal.tsx`**: Interface para novos dados de pagamento. Operação de tokenização com `try/catch` e erro exibido via estado `errors`. [REFATORADO]
+- **`CancelSubscriptionModal.tsx`**: Retenção e gestão de churn. Validação de motivo obrigatório ao submeter (em vez de botão desabilitado), `try/catch` com fallback para etapa anterior e banner de erro. [REFATORADO]
+- **`PauseSubscriptionModal.tsx`**: Pausa temporária de faturamento. Validação de duração obrigatória ao submeter, `try/catch` e banner de erro com `AlertCircle`. [REFATORADO]
 
 #### `PhotoUploadModal.tsx` [REFATORADO]
 Modal de upload de foto com melhorias de acessibilidade:
@@ -434,10 +452,14 @@ Shell reutilizável compartilhado entre Login e todas as páginas de recuperaç�
 - **Logo**: BugKillers com ícone `Bug`.
 - **Reutilização**: Login refatorado para usar este componente, eliminando duplicação de layout.
 
-#### `ForgotPasswordForm.tsx` [NOVO]
+#### `ForgotPasswordForm.tsx` [REFATORADO]
 Formulário de solicitação de link de recuperação:
 - **Input**: Campo de email com ícone `Mail` e validação.
 - **Mascaramento**: Função `maskEmail()` — `nome@empresa.com` → `no***@empresa.com`.
+- **Validação de E-mail**: Regex `EMAIL_REGEX` para validar campo vazio e formato inválido com mensagens específicas. [REFATORADO]
+- **Try/Catch**: Chamada de API envolvida em `try/catch` com mensagem de falha no envio. [REFATORADO]
+- **Banner de Erro**: Exibição de erros com `AlertCircle` em banner vermelho com animação `slide-in-from-top-2`. Erro auto-limpa ao digitar. [REFATORADO]
+- **Feedback Visual**: Borda do input e ícone `Mail` ficam vermelhos quando há erro. Botão de submit não mais desabilitado por campo vazio — valida ao submeter. [REFATORADO]
 - **Submit**: Estados idle → loading (spinner "Enviando...") → redirect para `/forgot-password/link-sent`.
 - **Navegação**: Link "Voltar para o Login" com ícone `ArrowLeft` e animação hover.
 
@@ -449,13 +471,16 @@ Card de confirmação de envio do link:
 - **Abrir E-mail**: Botão principal com `href="mailto:"`.
 - **Suspense**: Página envolvida em `<Suspense>` para `useSearchParams`.
 
-#### `ResetPasswordForm.tsx` [NOVO]
+#### `ResetPasswordForm.tsx` [REFATORADO]
 Formulário de criação de nova senha com validação completa:
 - **Campos**: Nova senha e Confirmar senha, ambos com toggle de visibilidade (`Eye`/`EyeOff`).
 - **Strength Bar**: 4 segmentos com cores progressivas (vermelho → laranja → amarelo → verde) e label textual ("Muito fraca", "Fraca", "Média", "Forte"). Usa `getPasswordStrength` de `lib/password-utils.ts`.
 - **Checklist**: Indicadores visuais com ícones `Check`/`Circle` — "Mínimo 8 caracteres" e "Senhas coincidem".
 - **Validação de Token**: Lido via `useSearchParams()`; se ausente, redireciona para `/reset-password/expired`.
-- **Botão Desabilitado**: Submit bloqueado até: 8+ caracteres + senhas coincidem + strength ≥ 2.
+- **Validação Inline**: Mensagens de erro específicas para campos vazios, senha curta, senhas não coincidentes e senha fraca. Botão de submit não mais desabilitado — valida ao submeter. [REFATORADO]
+- **Try/Catch**: Chamada de API envolvida em `try/catch` com mensagem de falha na redefinição. [REFATORADO]
+- **Banner de Erro**: Exibição de erros com `AlertCircle` em banner vermelho. Erro auto-limpa ao digitar nos campos. [REFATORADO]
+- **Feedback Visual**: Bordas dos inputs ficam vermelhas quando há erro. [REFATORADO]
 - **Suspense**: Página envolvida em `<Suspense>` para `useSearchParams`.
 
 #### `ResetSuccessCard.tsx` [NOVO]
@@ -485,6 +510,9 @@ Página de login refatorada para usar `AuthCardShell`:
 
 #### `LoginForm.tsx` [REFATORADO]
 - **Link "Esqueceu a senha?"**: Migrado de `<a href="#">` para `<Link href="/forgot-password">` com import do `next/link`.
+- **Validação de E-mail**: Regex `EMAIL_REGEX` para validar formato antes do submit. [REFATORADO]
+- **Try/Catch**: Chamada de API envolvida em `try/catch` com mensagem de erro de conexão ("Erro de conexão. Verifique sua internet e tente novamente."). [REFATORADO]
+- **Feedback Visual de Erro**: Bordas dos inputs ficam vermelhas (`border-red-300`) e ícones mudam para `text-red-400` quando há erro. [REFATORADO]
 
 #### `register/page.tsx` [REFATORADO]
 Página de cadastro com layout split-screen:
@@ -726,7 +754,7 @@ Configurações dos planos extraídas da página `plans/page.tsx` para constante
 
 ---
 
-## ❌ Tratamento de Erros [NOVO]
+## ❌ Tratamento de Erros [REFATORADO]
 
 O projeto implementa uma estratégia de tratamento de erros em múltiplas camadas:
 
@@ -735,15 +763,40 @@ O projeto implementa uma estratégia de tratamento de erros em múltiplas camada
 - Exibe UI amigável com opção de "Tentar Novamente".
 - Aceita `fallback` customizável por seção.
 
-### `error.tsx` (Página de Erro)
+### `error.tsx` (Página de Erro Raiz)
 - Página de erro padrão do Next.js App Router.
 - Exibe botões de "Tentar Novamente" e "Início".
 - Suporte completo a dark mode.
+
+### `error.tsx` por Route Group [NOVO]
+Cada grupo de rotas agora possui sua própria página de erro contextualizada com mensagens e navegação específicas:
+
+| Route Group | Título | Navegação de Fallback |
+|-------------|--------|----------------------|
+| `(agents)` | "Erro ao carregar agentes" | Dashboard |
+| `(auth)` | "Erro na autenticação" | Login |
+| `(dashboard)` | "Erro no painel" | Dashboard |
+| `(onboarding)` | "Erro na configuração" | Início (`/`) |
+| `(workspace)` | "Erro no workspace" | Dashboard |
+
+- **Padrão Visual**: Ícone `AlertTriangle` em círculo vermelho, título, descrição e dois botões (Tentar Novamente + navegação de fallback).
+- **Dark Mode**: Suporte completo com classes `dark:`.
+- **Reset**: Botão "Tentar Novamente" chama `reset()` do Next.js para re-renderizar o segmento.
 
 ### `global-error.tsx` (Erro Crítico)
 - Captura erros no root layout (quando o layout principal falha).
 - Inclui seu próprio `<html>` e `<body>` para renderização independente.
 - Botão de "Recarregar" para recuperação.
+
+### Tratamento de Erros em Formulários e Modais [NOVO]
+Padrão de validação e error handling aplicado em 10 componentes (`LoginForm`, `ForgotPasswordForm`, `ResetPasswordForm`, `SettingsPage`, `SecurityPage`, `CancelSubscriptionModal`, `PauseSubscriptionModal`, `UpdateCardModal`, `IntegrationConfigModal`, `IntegrationDisconnectModal`):
+
+- **Async/Await + Try/Catch**: Todas as operações assíncronas (chamadas de API simuladas) migradas de `setTimeout` com callback para `async/await` envolvido em `try/catch`.
+- **Validação ao Submeter**: Botões de submit não mais desabilitados por estado do formulário — a validação ocorre no `handleSubmit` com mensagens de erro específicas por cenário.
+- **Banner de Erro Consistente**: Componente inline com `AlertCircle` ou `AlertTriangle`, fundo vermelho translúcido (`bg-red-50 dark:bg-red-500/10`), borda vermelha e texto descritivo.
+- **Feedback Visual nos Inputs**: Bordas dos inputs ficam vermelhas (`border-red-300 dark:border-red-500/50`) e ícones mudam para `text-red-400` quando há erro.
+- **Auto-Clear**: Erros são limpos automaticamente quando o usuário interage com os campos (`onChange` limpa o estado de erro).
+- **Validação de E-mail**: `EMAIL_REGEX` (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`) adicionado no `LoginForm` e `ForgotPasswordForm` para validar formato antes do submit.
 
 ---
 

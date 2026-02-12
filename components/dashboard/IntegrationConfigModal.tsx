@@ -111,6 +111,7 @@ export function IntegrationConfigModal({ isOpen, onClose, integration }: Integra
     const [testResult, setTestResult] = useState<"success" | "error" | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     const data = integration ? integrationData[integration] : null;
 
@@ -118,28 +119,37 @@ export function IntegrationConfigModal({ isOpen, onClose, integration }: Integra
         setIsTesting(true);
         setTestResult(null);
 
-        // Simulate test
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        setIsTesting(false);
-        setTestResult("success");
-
-        setTimeout(() => setTestResult(null), 3000);
+        try {
+            // Simulate test
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            setIsTesting(false);
+            setTestResult("success");
+            setTimeout(() => setTestResult(null), 3000);
+        } catch {
+            setIsTesting(false);
+            setTestResult("error");
+        }
     };
 
     const handleSave = async () => {
         setIsSaving(true);
+        setSaveError(null);
 
-        // Simulate save
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+            // Simulate save
+            await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        setIsSaving(false);
-        setShowSaveSuccess(true);
+            setIsSaving(false);
+            setShowSaveSuccess(true);
 
-        setTimeout(() => {
-            setShowSaveSuccess(false);
-            onClose();
-        }, 1500);
+            setTimeout(() => {
+                setShowSaveSuccess(false);
+                onClose();
+            }, 1500);
+        } catch {
+            setIsSaving(false);
+            setSaveError("Erro ao salvar configurações. Tente novamente.");
+        }
     };
 
     const handleClose = () => {
@@ -362,7 +372,14 @@ export function IntegrationConfigModal({ isOpen, onClose, integration }: Integra
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-between">
+                <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex flex-col gap-3">
+                    {saveError && (
+                        <div className="flex items-center gap-2 text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-lg border border-red-100 dark:border-red-500/20">
+                            <AlertCircle className="size-4 flex-shrink-0" />
+                            <span className="text-xs font-medium">{saveError}</span>
+                        </div>
+                    )}
+                    <div className="flex items-center justify-between">
                     <div className="text-sm text-slate-500">
                         Última sincronização: há 5 minutos
                     </div>
@@ -393,6 +410,7 @@ export function IntegrationConfigModal({ isOpen, onClose, integration }: Integra
                                 "Salvar Configurações"
                             )}
                         </button>
+                    </div>
                     </div>
                 </div>
             </div>

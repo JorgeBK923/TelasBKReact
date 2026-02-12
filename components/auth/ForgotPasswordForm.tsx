@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, ArrowLeft, Loader2 } from 'lucide-react';
+import { Mail, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function maskEmail(email: string): string {
     const [local, domain] = email.split('@');
@@ -16,18 +18,34 @@ export function ForgotPasswordForm() {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email.trim()) return;
+        setError(null);
+
+        if (!email.trim()) {
+            setError('Por favor, insira seu e-mail.');
+            return;
+        }
+
+        if (!EMAIL_REGEX.test(email)) {
+            setError('Por favor, insira um e-mail válido.');
+            return;
+        }
 
         setIsLoading(true);
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+        try {
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1200));
 
-        const masked = maskEmail(email);
-        router.push(`/forgot-password/link-sent?email=${encodeURIComponent(masked)}`);
+            const masked = maskEmail(email);
+            router.push(`/forgot-password/link-sent?email=${encodeURIComponent(masked)}`);
+        } catch {
+            setError('Não foi possível enviar o link. Tente novamente.');
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -39,6 +57,13 @@ export function ForgotPasswordForm() {
                 </p>
             </div>
 
+            {error && (
+                <div className="flex items-center gap-2 text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-xl border border-red-100 dark:border-red-500/20 animate-in slide-in-from-top-2 duration-200">
+                    <AlertCircle className="size-4 flex-shrink-0" />
+                    <span className="text-xs font-medium">{error}</span>
+                </div>
+            )}
+
             <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="email">
@@ -46,16 +71,16 @@ export function ForgotPasswordForm() {
                     </label>
                     <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <Mail className="text-slate-400 w-5 h-5" />
+                            <Mail className={`w-5 h-5 ${error ? 'text-red-400' : 'text-slate-400'}`} />
                         </div>
                         <input
-                            className="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                            className={`block w-full rounded-lg border ${error ? 'border-red-300 dark:border-red-500/50' : 'border-slate-300 dark:border-slate-600'} bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors`}
                             id="email"
                             name="email"
                             placeholder="nome@empresa.com"
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => { setEmail(e.target.value); setError(null); }}
                             disabled={isLoading}
                         />
                     </div>
@@ -66,7 +91,7 @@ export function ForgotPasswordForm() {
                         isLoading ? 'opacity-90 cursor-wait' : 'hover:brightness-110 hover:shadow-primary/40 active:scale-[0.98]'
                     }`}
                     type="submit"
-                    disabled={isLoading || !email.trim()}
+                    disabled={isLoading}
                 >
                     {isLoading ? (
                         <>

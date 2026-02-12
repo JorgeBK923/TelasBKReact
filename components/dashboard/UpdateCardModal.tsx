@@ -88,20 +88,25 @@ export function UpdateCardModal({ isOpen, onClose }: UpdateCardModalProps) {
 
         setIsLoading(true);
 
-        // Simulate tokenization and API call
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+            // Simulate tokenization and API call
+            await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        setIsLoading(false);
-        setIsSuccess(true);
+            setIsLoading(false);
+            setIsSuccess(true);
 
-        setTimeout(() => {
-            setIsSuccess(false);
-            setCardNumber("");
-            setCardName("");
-            setExpiry("");
-            setCvv("");
-            onClose();
-        }, 1500);
+            setTimeout(() => {
+                setIsSuccess(false);
+                setCardNumber("");
+                setCardName("");
+                setExpiry("");
+                setCvv("");
+                onClose();
+            }, 1500);
+        } catch {
+            setIsLoading(false);
+            setErrors({ cardNumber: "Erro ao processar o cartão. Tente novamente." });
+        }
     }, [cardNumber, cardName, expiry, cvv, onClose]);
 
     const handleClose = () => {

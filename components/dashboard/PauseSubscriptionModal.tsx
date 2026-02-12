@@ -12,6 +12,7 @@ export function PauseSubscriptionModal({ isOpen, onClose }: PauseSubscriptionMod
     const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const durations = [
         { months: 1, label: "1 mês", description: "Pausa rápida para reagrupar" },
@@ -20,27 +21,37 @@ export function PauseSubscriptionModal({ isOpen, onClose }: PauseSubscriptionMod
     ];
 
     const handlePause = async () => {
-        if (!selectedDuration) return;
+        if (!selectedDuration) {
+            setError("Selecione um período de pausa.");
+            return;
+        }
 
         setIsLoading(true);
+        setError(null);
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        setIsLoading(false);
-        setIsSuccess(true);
+            setIsLoading(false);
+            setIsSuccess(true);
 
-        setTimeout(() => {
-            setIsSuccess(false);
-            setSelectedDuration(null);
-            onClose();
-        }, 2000);
+            setTimeout(() => {
+                setIsSuccess(false);
+                setSelectedDuration(null);
+                onClose();
+            }, 2000);
+        } catch {
+            setIsLoading(false);
+            setError("Erro ao pausar a assinatura. Tente novamente.");
+        }
     };
 
     const handleClose = () => {
         if (!isLoading) {
             setSelectedDuration(null);
             setIsSuccess(false);
+            setError(null);
             onClose();
         }
     };
@@ -109,6 +120,12 @@ export function PauseSubscriptionModal({ isOpen, onClose }: PauseSubscriptionMod
                         </div>
                     ) : (
                         <>
+                            {error && (
+                                <div className="flex items-center gap-2 text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-xl border border-red-100 dark:border-red-500/20 mb-4">
+                                    <AlertCircle className="size-4 flex-shrink-0" />
+                                    <span className="text-xs font-medium">{error}</span>
+                                </div>
+                            )}
                             <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800 mb-6">
                                 <div className="flex items-start gap-3">
                                     <AlertCircle className="size-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
@@ -199,8 +216,7 @@ export function PauseSubscriptionModal({ isOpen, onClose }: PauseSubscriptionMod
                         </button>
                         <button
                             onClick={handlePause}
-                            disabled={!selectedDuration}
-                            className="px-6 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white text-sm font-semibold transition-colors disabled:cursor-not-allowed"
+                            className="px-6 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold transition-colors"
                         >
                             Pausar Assinatura
                         </button>

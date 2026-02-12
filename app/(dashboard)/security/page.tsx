@@ -53,12 +53,17 @@ export default function SecurityPage() {
         triggerToast("Todas as outras sessões foram encerradas.");
     };
 
-    const handleSaveAlerts = () => {
+    const handleSaveAlerts = async () => {
         setIsSavingAlerts(true);
-        setTimeout(() => {
+
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             setIsSavingAlerts(false);
             triggerToast("Configurações de alerta salvas com sucesso!");
-        }, 1000);
+        } catch {
+            setIsSavingAlerts(false);
+            triggerToast("Erro ao salvar configurações. Tente novamente.");
+        }
     };
 
     return (
