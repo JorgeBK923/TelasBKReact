@@ -11,6 +11,7 @@ export interface PlanCardProps {
     isPopular?: boolean;
     badge?: string;
     variant?: 'outline' | 'filled' | 'subtle';
+    onSelect?: () => void;
 }
 
 export function PlanCard({
@@ -23,6 +24,7 @@ export function PlanCard({
     isPopular = false,
     badge,
     variant = 'outline',
+    onSelect,
 }: PlanCardProps) {
     return (
         <div
@@ -63,6 +65,7 @@ export function PlanCard({
                         ? 'border-2 border-primary text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-primary/20'
                         : 'border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:border-primary hover:text-primary dark:hover:border-primary dark:hover:text-primary'
                 }`}
+                onClick={onSelect}
             >
                 {buttonText}
             </button>

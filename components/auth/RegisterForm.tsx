@@ -1,26 +1,48 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { getPasswordStrength, strengthColors } from '@/lib/password-utils';
+import { useOnboarding } from '@/context/OnboardingContext';
+import { useUser } from '@/context/UserContext';
 
 export function RegisterForm() {
+    const router = useRouter();
+    const { setRegistration } = useOnboarding();
+    const { updateUser } = useUser();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const strength = password.length > 0 ? getPasswordStrength(password) : 0;
 
+    const validate = () => {
+        const newErrors: Record<string, string> = {};
+        if (!name.trim()) newErrors.name = 'Informe seu nome completo.';
+        if (!email.trim()) newErrors.email = 'Informe seu e-mail.';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'E-mail inválido.';
+        if (!password.trim()) newErrors.password = 'Crie uma senha.';
+        else if (password.length < 6) newErrors.password = 'A senha deve ter pelo menos 6 caracteres.';
+        if (!agreedToTerms) newErrors.terms = 'Você precisa aceitar os termos.';
+        return newErrors;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name.trim() || !email.trim() || !password.trim() || !agreedToTerms) return;
+        const newErrors = validate();
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
 
         setIsLoading(true);
         await new Promise((resolve) => setTimeout(resolve, 1500));
-        setIsLoading(false);
+        setRegistration({ name, email });
+        updateUser({ name, email });
+        router.push('/plans');
     };
 
     return (
@@ -34,16 +56,17 @@ export function RegisterForm() {
                         <User className="text-slate-400 w-5 h-5" />
                     </div>
                     <input
-                        className="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                        className={`block w-full rounded-lg border ${errors.name ? 'border-red-500 dark:border-red-500' : 'border-slate-300 dark:border-slate-600'} bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors`}
                         id="full-name"
                         name="full-name"
                         placeholder="João Silva"
                         type="text"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => { setName(e.target.value); setErrors((prev) => ({ ...prev, name: '' })); }}
                         disabled={isLoading}
                     />
                 </div>
+                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
             </div>
 
             <div className="space-y-2">
@@ -55,16 +78,17 @@ export function RegisterForm() {
                         <Mail className="text-slate-400 w-5 h-5" />
                     </div>
                     <input
-                        className="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                        className={`block w-full rounded-lg border ${errors.email ? 'border-red-500 dark:border-red-500' : 'border-slate-300 dark:border-slate-600'} bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors`}
                         id="register-email"
                         name="email"
                         placeholder="nome@empresa.com"
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => { setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: '' })); }}
                         disabled={isLoading}
                     />
                 </div>
+                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -76,13 +100,13 @@ export function RegisterForm() {
                         <Lock className="text-slate-400 w-5 h-5" />
                     </div>
                     <input
-                        className="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                        className={`block w-full rounded-lg border ${errors.password ? 'border-red-500 dark:border-red-500' : 'border-slate-300 dark:border-slate-600'} bg-gray-50 dark:bg-slate-800 py-3 pl-10 pr-10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors`}
                         id="register-password"
                         name="password"
                         placeholder="••••••••"
                         type={showPassword ? 'text' : 'password'}
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => { setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: '' })); }}
                         disabled={isLoading}
                     />
                     <div
@@ -104,6 +128,7 @@ export function RegisterForm() {
                         />
                     ))}
                 </div>
+                {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
             </div>
 
             <div className="flex items-start">
@@ -114,7 +139,7 @@ export function RegisterForm() {
                         name="terms"
                         type="checkbox"
                         checked={agreedToTerms}
-                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        onChange={(e) => { setAgreedToTerms(e.target.checked); setErrors((prev) => ({ ...prev, terms: '' })); }}
                         disabled={isLoading}
                     />
                 </div>
@@ -126,13 +151,14 @@ export function RegisterForm() {
                     </label>
                 </div>
             </div>
+            {errors.terms && <p className="text-xs text-red-500 -mt-2">{errors.terms}</p>}
 
             <button
                 className={`flex w-full justify-center items-center gap-2 rounded-lg bg-primary py-3 px-4 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 ${
                     isLoading ? 'opacity-90 cursor-wait' : 'hover:brightness-110 hover:shadow-primary/40 active:scale-[0.98]'
                 }`}
                 type="submit"
-                disabled={isLoading || !agreedToTerms}
+                disabled={isLoading}
             >
                 {isLoading ? (
                     <>

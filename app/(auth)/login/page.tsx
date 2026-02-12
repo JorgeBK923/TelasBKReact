@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { AuthCardShell } from '@/components/auth/AuthCardShell';
 import { SocialButtons } from '@/components/auth/SocialButtons';
 import { LoginForm } from '@/components/auth/LoginForm';
@@ -25,7 +26,7 @@ export default function LoginPage() {
 
                 <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
                     Não tem uma conta?{' '}
-                    <a className="font-bold text-primary hover:text-blue-500 hover:underline" href="#">Cadastre-se</a>
+                    <Link className="font-bold text-primary hover:text-blue-500 hover:underline" href="/register">Cadastre-se</Link>
                 </p>
             </div>
         </AuthCardShell>

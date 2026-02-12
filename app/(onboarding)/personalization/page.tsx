@@ -3,8 +3,12 @@
 import React from 'react';
 import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
 import { PersonalizationForm } from '@/components/onboarding/PersonalizationForm';
+import { useOnboarding } from '@/context/OnboardingContext';
 
 export default function PersonalizationPage() {
+    const { state } = useOnboarding();
+    const firstName = state.registration?.name?.split(' ')[0] || 'Você';
+
     return (
         <>
             <OnboardingHeader sticky bordered />
@@ -20,7 +24,7 @@ export default function PersonalizationPage() {
                         <div className="p-8 sm:p-10 flex flex-col gap-8">
                             <div className="flex flex-col gap-2 text-center sm:text-left">
                                 <h1 className="text-slate-900 dark:text-white text-3xl sm:text-4xl font-black leading-tight tracking-tight">
-                                    Tudo pronto para começar, Alice!
+                                    Tudo pronto para começar, {firstName}!
                                 </h1>
                                 <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
                                     Nos ajude a personalizar sua experiência respondendo a duas perguntas rápidas.
@@ -32,7 +36,7 @@ export default function PersonalizationPage() {
                     </div>
 
                     <p className="text-center text-slate-400 text-sm">
-                        Passo 2 de 3 &bull; Configuração do Ambiente
+                        Passo 4 de 5 &bull; Configuração do Ambiente
                     </p>
                 </div>
             </main>

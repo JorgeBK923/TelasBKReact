@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { UserProvider } from "@/context/UserContext";
+import { OnboardingProvider } from "@/context/OnboardingContext";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const inter = Inter({
@@ -24,11 +25,13 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <UserProvider>
-          <ThemeProvider>
-            <ErrorBoundary>
-              {children}
-            </ErrorBoundary>
-          </ThemeProvider>
+          <OnboardingProvider>
+            <ThemeProvider>
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
+            </ThemeProvider>
+          </OnboardingProvider>
         </UserProvider>
       </body>
     </html>

@@ -16,6 +16,7 @@ interface UserData {
 interface UserContextType {
     user: UserData;
     updateAvatar: (newUrl: string) => void;
+    updateUser: (data: Partial<UserData>) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -36,7 +37,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("user_profile_image", newUrl);
     }, []);
 
-    const value = useMemo(() => ({ user, updateAvatar }), [user, updateAvatar]);
+    const updateUser = useCallback((data: Partial<UserData>) => {
+        setUser((prev) => ({ ...prev, ...data }));
+    }, []);
+
+    const value = useMemo(() => ({ user, updateAvatar, updateUser }), [user, updateAvatar, updateUser]);
 
     return (
         <UserContext.Provider value={value}>

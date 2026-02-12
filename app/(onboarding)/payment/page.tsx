@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
 import { PaymentForm } from '@/components/onboarding/PaymentForm';
 import { OrderSummary } from '@/components/onboarding/OrderSummary';
@@ -25,7 +25,9 @@ export default function PaymentPage() {
                     </div>
 
                     <div className="mt-10 lg:mt-0 lg:col-span-5">
-                        <OrderSummary />
+                        <Suspense>
+                            <OrderSummary />
+                        </Suspense>
                     </div>
                 </div>
             </main>

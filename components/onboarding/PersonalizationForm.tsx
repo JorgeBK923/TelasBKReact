@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { LayoutGrid, ChevronDown, Bot, Bug, Gauge, Lock, ArrowRight } from 'lucide-react';
 import { ObjectiveCard } from './ObjectiveCard';
+import { useOnboarding } from '@/context/OnboardingContext';
 
 const objectives = [
     { icon: Bot, label: 'Automação de Testes', value: 'automation' },
@@ -19,12 +21,26 @@ const roles = [
 ];
 
 export function PersonalizationForm() {
+    const router = useRouter();
+    const { setPersonalization } = useOnboarding();
     const [workspace, setWorkspace] = useState('');
     const [role, setRole] = useState('');
     const [objective, setObjective] = useState('automation');
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const newErrors: Record<string, string> = {};
+        if (!workspace.trim()) newErrors.workspace = 'Informe o nome do workspace.';
+        if (!role) newErrors.role = 'Selecione seu papel.';
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
+        setPersonalization({ workspaceName: workspace, role, objective });
+        router.push('/setup');
+    };
 
     return (
-        <form className="flex flex-col gap-6">
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
                 <label
                     className="text-slate-900 dark:text-slate-200 text-sm font-semibold uppercase tracking-wide"
@@ -34,15 +50,16 @@ export function PersonalizationForm() {
                 </label>
                 <div className="relative">
                     <input
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 px-4 h-14 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base outline-none"
+                        className={`w-full rounded-xl border ${errors.workspace ? 'border-red-500 dark:border-red-500' : 'border-slate-200 dark:border-slate-600'} bg-slate-50 dark:bg-slate-800/50 px-4 h-14 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base outline-none`}
                         id="workspace"
                         placeholder="Ex: Time de QA Alpha"
                         type="text"
                         value={workspace}
-                        onChange={(e) => setWorkspace(e.target.value)}
+                        onChange={(e) => { setWorkspace(e.target.value); setErrors((prev) => ({ ...prev, workspace: '' })); }}
                     />
                     <LayoutGrid className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none w-5 h-5" />
                 </div>
+                {errors.workspace && <p className="text-xs text-red-500 mt-1">{errors.workspace}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -54,10 +71,10 @@ export function PersonalizationForm() {
                 </label>
                 <div className="relative">
                     <select
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 px-4 h-14 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base outline-none appearance-none cursor-pointer"
+                        className={`w-full rounded-xl border ${errors.role ? 'border-red-500 dark:border-red-500' : 'border-slate-200 dark:border-slate-600'} bg-slate-50 dark:bg-slate-800/50 px-4 h-14 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base outline-none appearance-none cursor-pointer`}
                         id="role"
                         value={role}
-                        onChange={(e) => setRole(e.target.value)}
+                        onChange={(e) => { setRole(e.target.value); setErrors((prev) => ({ ...prev, role: '' })); }}
                     >
                         {roles.map((r) => (
                             <option key={r.value} value={r.value} disabled={r.disabled}>
@@ -67,6 +84,7 @@ export function PersonalizationForm() {
                     </select>
                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none w-5 h-5" />
                 </div>
+                {errors.role && <p className="text-xs text-red-500 mt-1">{errors.role}</p>}
             </div>
 
             <div className="flex flex-col gap-3">
@@ -94,10 +112,10 @@ export function PersonalizationForm() {
                     <span>Seus dados estão seguros</span>
                 </div>
                 <button
-                    type="button"
+                    type="submit"
                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:brightness-110 text-white font-bold text-base h-12 px-8 rounded-lg transition-all active:scale-95 shadow-md shadow-primary/20"
                 >
-                    <span>Ir para Pagamento</span>
+                    <span>Configurar Ambiente</span>
                     <ArrowRight className="w-5 h-5" />
                 </button>
             </div>

@@ -1,14 +1,33 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CreditCard, HelpCircle, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { useOnboarding } from '@/context/OnboardingContext';
 
 export function PaymentForm() {
+    const router = useRouter();
+    const { setPaymentCompleted } = useOnboarding();
     const [cardName, setCardName] = useState('');
     const [cardNumber, setCardNumber] = useState('');
     const [expiry, setExpiry] = useState('');
     const [cvv, setCvv] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const validate = () => {
+        const newErrors: Record<string, string> = {};
+        if (!cardName.trim()) newErrors.cardName = 'Informe o nome no cartão.';
+        const digits = cardNumber.replace(/\D/g, '');
+        if (!digits) newErrors.cardNumber = 'Informe o número do cartão.';
+        else if (digits.length < 13) newErrors.cardNumber = 'Número do cartão incompleto.';
+        const expiryDigits = expiry.replace(/\D/g, '');
+        if (!expiryDigits) newErrors.expiry = 'Informe a validade.';
+        else if (expiryDigits.length < 4) newErrors.expiry = 'Validade incompleta.';
+        if (!cvv) newErrors.cvv = 'Informe o CVV.';
+        else if (cvv.length < 3) newErrors.cvv = 'CVV inválido.';
+        return newErrors;
+    };
 
     const formatCardNumber = (value: string) => {
         const digits = value.replace(/\D/g, '').slice(0, 16);
@@ -25,9 +44,13 @@ export function PaymentForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const newErrors = validate();
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
         setIsLoading(true);
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        setIsLoading(false);
+        setPaymentCompleted();
+        router.push('/personalization');
     };
 
     return (
@@ -45,15 +68,16 @@ export function PaymentForm() {
                             <div className="mt-1">
                                 <input
                                     autoComplete="cc-name"
-                                    className="block w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 pl-4"
+                                    className={`block w-full rounded-lg ${errors.cardName ? 'border-red-500 dark:border-red-500' : 'border-slate-300 dark:border-slate-600'} dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 pl-4`}
                                     id="card-name"
                                     placeholder="Como impresso no cartão"
                                     type="text"
                                     value={cardName}
-                                    onChange={(e) => setCardName(e.target.value)}
+                                    onChange={(e) => { setCardName(e.target.value); setErrors((prev) => ({ ...prev, cardName: '' })); }}
                                     disabled={isLoading}
                                 />
                             </div>
+                            {errors.cardName && <p className="text-xs text-red-500 mt-1">{errors.cardName}</p>}
                         </div>
 
                         <div className="col-span-2">
@@ -63,12 +87,12 @@ export function PaymentForm() {
                             <div className="mt-1 relative">
                                 <input
                                     autoComplete="cc-number"
-                                    className="block w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 pl-10"
+                                    className={`block w-full rounded-lg ${errors.cardNumber ? 'border-red-500 dark:border-red-500' : 'border-slate-300 dark:border-slate-600'} dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 pl-10`}
                                     id="card-number"
                                     placeholder="0000 0000 0000 0000"
                                     type="text"
                                     value={cardNumber}
-                                    onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                                    onChange={(e) => { setCardNumber(formatCardNumber(e.target.value)); setErrors((prev) => ({ ...prev, cardNumber: '' })); }}
                                     disabled={isLoading}
                                 />
                                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -81,6 +105,7 @@ export function PaymentForm() {
                                     </div>
                                 </div>
                             </div>
+                            {errors.cardNumber && <p className="text-xs text-red-500 mt-1">{errors.cardNumber}</p>}
                         </div>
 
                         <div className="col-span-1">
@@ -90,15 +115,16 @@ export function PaymentForm() {
                             <div className="mt-1">
                                 <input
                                     autoComplete="cc-exp"
-                                    className="block w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 text-center"
+                                    className={`block w-full rounded-lg ${errors.expiry ? 'border-red-500 dark:border-red-500' : 'border-slate-300 dark:border-slate-600'} dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 text-center`}
                                     id="expiration-date"
                                     placeholder="MM / AA"
                                     type="text"
                                     value={expiry}
-                                    onChange={(e) => setExpiry(formatExpiry(e.target.value))}
+                                    onChange={(e) => { setExpiry(formatExpiry(e.target.value)); setErrors((prev) => ({ ...prev, expiry: '' })); }}
                                     disabled={isLoading}
                                 />
                             </div>
+                            {errors.expiry && <p className="text-xs text-red-500 mt-1">{errors.expiry}</p>}
                         </div>
 
                         <div className="col-span-1">
@@ -108,19 +134,20 @@ export function PaymentForm() {
                             <div className="mt-1 relative">
                                 <input
                                     autoComplete="csc"
-                                    className="block w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 text-center"
+                                    className={`block w-full rounded-lg ${errors.cvv ? 'border-red-500 dark:border-red-500' : 'border-slate-300 dark:border-slate-600'} dark:bg-slate-800 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 text-center`}
                                     id="cvc"
                                     placeholder="123"
                                     type="text"
                                     maxLength={4}
                                     value={cvv}
-                                    onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                    onChange={(e) => { setCvv(e.target.value.replace(/\D/g, '').slice(0, 4)); setErrors((prev) => ({ ...prev, cvv: '' })); }}
                                     disabled={isLoading}
                                 />
                                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                     <HelpCircle className="text-slate-400 w-4 h-4" />
                                 </div>
                             </div>
+                            {errors.cvv && <p className="text-xs text-red-500 mt-1">{errors.cvv}</p>}
                         </div>
                     </div>
                 </div>
