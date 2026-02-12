@@ -162,12 +162,16 @@ Projeto-BugKillers/
 │   └── useChat.ts                # Hook de chat IA com streaming simulado
 │
 ├── types/                        # [NOVO] Tipagens TypeScript
-│   └── chat-types.ts             # Interfaces de ChatMessage e Conversation
+│   ├── chat-types.ts             # Interfaces de ChatMessage e Conversation
+│   └── onboarding.ts             # [NOVO] Interfaces do fluxo de onboarding
 │
-├── context/                      # UserContext (Estado Global) [OTIMIZADO]
+├── context/                      # Contexts (Estado Global) [OTIMIZADO]
+│   ├── UserContext.tsx            # Dados do usuário e sincronização global [OTIMIZADO]
+│   └── OnboardingContext.tsx      # [NOVO] Estado do fluxo de onboarding (sessionStorage)
 ├── constants/                    # Dados estáticos
 │   ├── user.ts                   # Dados iniciais do usuário
-│   └── help-data.ts              # [NOVO] Categorias e artigos da Central de Ajuda
+│   ├── help-data.ts              # [NOVO] Categorias e artigos da Central de Ajuda
+│   └── plans.ts                  # [NOVO] Configurações dos planos (Starter/Pro/Enterprise)
 ├── providers/                    # Context Providers
 │   └── ThemeProvider.tsx         # Provider do next-themes
 │
@@ -404,10 +408,12 @@ Modal de agendamento de demonstração em 2 etapas:
 #### `RegisterForm.tsx` [REFATORADO]
 Formulário de criação de conta com validação e feedback visual:
 - **Campos**: Nome Completo (`User`), E-mail Corporativo (`Mail`), Senha (`Lock`).
+- **Validação Inline**: Mensagens de erro por campo (borda vermelha + texto) com limpeza automática ao digitar. Valida nome, email (formato), senha (mín. 6 chars) e aceite de termos. [REFATORADO]
 - **Força da Senha**: Indicador de 4 barras com cores progressivas (vermelho → laranja → amarelo → verde). Lógica extraída para `lib/password-utils.ts`. [REFATORADO]
 - **Visibilidade**: Toggle de exibir/ocultar senha com ícones `Eye`/`EyeOff`.
 - **Termos**: Checkbox obrigatório para aceitar Termos e Política de Privacidade.
 - **Submit**: Estados idle → loading (spinner "Criando conta...") com bloqueio do formulário.
+- **Integração**: Salva dados no `OnboardingContext` (`setRegistration`) e `UserContext` (`updateUser`), depois redireciona para `/plans`. [REFATORADO]
 
 #### `SocialButtons.tsx` [REFATORADO]
 Botões de autenticação social reutilizáveis:
@@ -480,50 +486,62 @@ Página de login refatorada para usar `AuthCardShell`:
 #### `LoginForm.tsx` [REFATORADO]
 - **Link "Esqueceu a senha?"**: Migrado de `<a href="#">` para `<Link href="/forgot-password">` com import do `next/link`.
 
-#### `register/page.tsx`
+#### `register/page.tsx` [REFATORADO]
 Página de cadastro com layout split-screen:
 - **Painel Esquerdo** (desktop): Hero com imagem de fundo, texto motivacional e ícones de tecnologias (JS, Python, Jira).
 - **Painel Direito**: Logo, formulário de cadastro com `SocialButtons` + `RegisterForm`.
 - **Responsivo**: Painel esquerdo oculto em mobile (`hidden lg:flex`).
+- **Navegação**: Link "Já tem uma conta?" migrado de `<a href="#">` para `<Link href="/login">`. [REFATORADO]
 
 #### `OnboardingHeader.tsx`
 Header compartilhado para todas as páginas do fluxo de onboarding:
 - **Props**: `sticky` (posição fixa no topo com backdrop-blur) e `bordered` (borda inferior).
 - **Tema**: Toggle otimizado com `useTheme()` e proteção de hidratação (`mounted`).
 
-#### `PlanCard.tsx`
+#### `PlanCard.tsx` [REFATORADO]
 Card de plano reutilizável com 3 variantes visuais:
 - **Variantes**: `outline` (borda primary), `filled` (fundo primary) e `subtle` (borda neutra).
 - **Popular**: Badge "Mais Popular" flutuante com elevação visual (`-translate-y-4`).
 - **Badge**: Tag opcional de destaque (ex: "Mais Escolhido").
 - **Features**: Lista de benefícios com ícones `CheckCircle`.
+- **Callback**: Prop `onSelect` para capturar a seleção do plano pelo componente pai. [REFATORADO]
 
-#### `plans/page.tsx`
+#### `plans/page.tsx` [REFATORADO]
 Página de seleção de plano com 3 tiers:
 - **Starter**: R$ 49/mês — 1 agente, 50 testes, relatórios básicos.
 - **Professional**: R$ 80/mês — 5 agentes, testes ilimitados, CI/CD completa. Destacado como "Mais Popular".
-- **Enterprise**: Sob consulta — agentes ilimitados, deploy on-premise, SSO/RBAC.
+- **Enterprise**: Sob consulta — agentes ilimitados, deploy on-premise, SSO/RBAC. Redireciona para `/contact`. [REFATORADO]
 - **Trust Section**: Logos de empresas parceiras ("Confiado por times de engenharia inovadores").
+- **Dados Centralizados**: Planos migrados de inline para `constants/plans.ts` via constante `PLANS`. [REFATORADO]
+- **Integração**: Salva plano selecionado no `OnboardingContext` (`setSelectedPlan`) e navega para `/payment?plan=NomePlano`. [REFATORADO]
 
-#### `PaymentForm.tsx`
+#### `PaymentForm.tsx` [REFATORADO]
 Formulário de pagamento com formatação inteligente de inputs:
 - **Campos**: Nome no Cartão, Número (formatação automática 0000 0000 0000 0000), Validade MM/AA e CVV.
+- **Validação Inline**: Mensagens de erro por campo (borda vermelha + texto) com limpeza ao digitar. Valida nome, número (mín. 13 dígitos), validade (4 dígitos) e CVV (mín. 3 dígitos). [REFATORADO]
 - **Ícones**: `CreditCard` no número, `HelpCircle` no CVV.
 - **Segurança**: Aviso de criptografia 256 bits com ícone `Lock`.
 - **Submit**: Estados idle → loading (spinner "Processando...").
+- **Integração**: Marca pagamento como concluído no `OnboardingContext` (`setPaymentCompleted`) e navega para `/personalization`. [REFATORADO]
 
-#### `OrderSummary.tsx`
+#### `OrderSummary.tsx` [REFATORADO]
 Resumo do pedido com breakdown de preços:
-- **Plano**: Nome, tipo de cobrança e preço destacado.
-- **Incluso**: Lista de benefícios com `CheckCircle`.
+- **Plano Dinâmico**: Nome, preço e features carregados dinamicamente via query string (`useSearchParams`) e `getPlanByName()` de `constants/plans.ts`. [REFATORADO]
+- **Incluso**: Lista de benefícios com `CheckCircle` gerada pelo plano selecionado.
 - **Breakdown**: Subtotal, impostos e total a pagar com separadores visuais.
 - **Sticky**: Fixo na lateral em telas grandes (`lg:sticky lg:top-28`).
+- **Alterar Plano**: Link migrado de `<a href="#">` para botão com `router.push('/plans')`. [REFATORADO]
+- **Suspense**: Componente envolvido em `<Suspense>` na página para `useSearchParams`. [REFATORADO]
 
-#### `PersonalizationForm.tsx`
+#### `PersonalizationForm.tsx` [REFATORADO]
 Formulário de personalização de uso com 3 campos:
 - **Workspace**: Input de texto com ícone `LayoutGrid`.
 - **Papel**: Select com opções QA Engineer, Developer, Product Manager, CTO/Tech Lead.
 - **Objetivo**: Radio cards visuais (`ObjectiveCard`) — Automação de Testes, Gestão de Bugs, Monitoramento.
+- **Validação Inline**: Mensagens de erro para workspace e papel (borda vermelha + texto) com limpeza ao interagir. [REFATORADO]
+- **Integração**: Salva dados no `OnboardingContext` (`setPersonalization`) e navega para `/setup`. Botão alterado de "Ir para Pagamento" para "Configurar Ambiente" com `type="submit"`. [REFATORADO]
+- **Nome Dinâmico**: Página de personalização exibe o primeiro nome do usuário ("Tudo pronto para começar, {nome}!") via `OnboardingContext`. [REFATORADO]
+- **Step Indicator**: Corrigido de "Passo 2 de 3" para "Passo 4 de 5". [REFATORADO]
 
 #### `ObjectiveCard.tsx`
 Card de seleção tipo radio com feedback visual:
@@ -543,12 +561,32 @@ Timeline de provisionamento com 3 estados visuais:
 - **Pending**: Círculo cinza com `Circle` ou `Flag` — passos futuros (opacity reduzida).
 - **Linha Vertical**: Conecta todos os steps visualmente.
 
-#### `setup/page.tsx`
-Página de provisionamento do ambiente:
-- **Hero**: Ícone `Bot` animado (bounce + ping + pulse) com texto "Preparando seu ambiente...".
-- **Progress Card**: `SetupProgress` (72%) + `SetupTimeline` com 5 etapas (pagamento → workspace → agente → servidores → pronto).
-- **Botão**: "Acessar Workspace" desabilitado até conclusão, habilitado com estilo primary + glow.
+#### `setup/page.tsx` [REFATORADO]
+Página de provisionamento do ambiente com simulação animada:
+- **Hero Dinâmico**: Ícone `Bot` animado (bounce + ping + pulse) durante carregamento; animações cessam e texto muda para "Ambiente pronto!" ao concluir. [REFATORADO]
+- **Simulação Automática**: Progressão temporizada em 3 fases — 45% (2s) → 72% (4s) → 90% (5.5s) → 100% com timeline steps atualizando em tempo real. [REFATORADO]
+- **Timeline Dinâmica**: Função `getSetupSteps()` retorna steps com status calculado com base no passo atual (`complete`, `active` ou `pending`). [REFATORADO]
+- **Progress Card**: `SetupProgress` com porcentagem animada + `SetupTimeline` com 5 etapas (pagamento → workspace → agente → servidores → pronto).
+- **Botão**: "Acessar Workspace" desabilitado até conclusão, habilitado com estilo primary + glow. Ao clicar, marca `setSetupCompleted()` no `OnboardingContext` e navega para `/agents`. [REFATORADO]
 - **Suporte**: Link inferior "Problemas com a configuração? Contate o suporte".
+
+### 🔄 Fluxo de Navegação do Onboarding [NOVO]
+
+O fluxo de onboarding agora é funcional com navegação real entre as etapas, validação de formulários e estado global persistido em `sessionStorage`:
+
+**Fluxo Completo**: `/register` → `/plans` → `/payment?plan=NomePlano` → `/personalization` → `/setup` → `/agents`
+
+| Etapa | Página | Ação no Contexto | Navegação |
+|-------|--------|-------------------|-----------|
+| 1. Cadastro | `/register` | `setRegistration()` + `updateUser()` | → `/plans` |
+| 2. Plano | `/plans` | `setSelectedPlan()` | → `/payment?plan=X` (Enterprise → `/contact`) |
+| 3. Pagamento | `/payment` | `setPaymentCompleted()` | → `/personalization` |
+| 4. Personalização | `/personalization` | `setPersonalization()` | → `/setup` |
+| 5. Setup | `/setup` | `setSetupCompleted()` | → `/agents` |
+
+- **Validação**: Todos os formulários (cadastro, pagamento, personalização) possuem validação inline com mensagens de erro por campo, bordas vermelhas e limpeza automática ao corrigir.
+- **Dados Dinâmicos**: Nome do usuário, plano selecionado e features são propagados entre páginas via `OnboardingContext`.
+- **Root Layout**: `OnboardingProvider` integrado ao `layout.tsx` envolvendo `ThemeProvider` e `ErrorBoundary`.
 
 ### ❓ Central de Ajuda [NOVO]
 
@@ -628,6 +666,7 @@ Hook de chat IA com respostas simuladas e streaming:
 
 | Rota | Descrição | Status |
 |------|-----------|--------|
+| `/` | Landing page com hero, pricing e CTA | ✅ Completo |
 | `/login` | Login com suporte a tema adaptativo | ✅ Completo |
 | `/register` | Cadastro com split-screen e força de senha | ✅ Completo |
 | `/forgot-password` | Solicitar link de recuperação de senha | ✅ Completo |
@@ -645,7 +684,9 @@ Hook de chat IA com respostas simuladas e streaming:
 | `/profile` | Edição de perfil e sincronização global | ✅ Completo |
 | `/billing` | Planos, Modais e Faturamento | ✅ Completo |
 | `/settings` | Preferências, tema, idioma e notificações | ✅ Completo |
+| `/integrations` | Gerenciamento de integrações e ferramentas | ✅ Completo |
 | `/security` | Segurança, 2FA e Senha | ✅ Completo |
+| `/usage` | Dados de consumo e uso da plataforma | ✅ Completo |
 | `/help` | Central de Ajuda com busca e categorias | ✅ Completo |
 | `/contact` | Página de Contato com formulário e FAQ | ✅ Completo |
 
@@ -655,12 +696,29 @@ Hook de chat IA com respostas simuladas e streaming:
 
 Implementamos uma camada de estado global para garantir a **Consistência de Dados** em toda a aplicação.
 
-### UserContext
+### UserContext [OTIMIZADO]
 Localizado em `context/UserContext.tsx`, este provider gerencia:
 - **Dados do Usuário**: Nome, email, cargo e avatar.
 - **Sincronização**: Qualquer alteração no perfil reflete instantaneamente no Header, Sidebar e Chat.
 - **Persistência**: Integração com `localStorage` para manter as preferências do usuário entre sessões.
-- **Memoização**: `useCallback` para `updateAvatar` e `useMemo` para o valor do contexto, evitando re-renders desnecessários. [OTIMIZADO]
+- **Memoização**: `useCallback` para `updateAvatar`, `updateUser` e `useMemo` para o valor do contexto, evitando re-renders desnecessários. [OTIMIZADO]
+- **`updateUser()`**: Função para atualização parcial dos dados do usuário (`Partial<UserData>`). Utilizada pelo `RegisterForm` para sincronizar nome e email após cadastro. [NOVO]
+
+### OnboardingContext [NOVO]
+Localizado em `context/OnboardingContext.tsx`, este provider gerencia o estado do fluxo de onboarding pós-cadastro:
+- **Estado Centralizado**: `OnboardingState` com `currentStep`, `registration`, `selectedPlan`, `paymentCompleted`, `personalization` e `setupCompleted`.
+- **Persistência**: Integração com `sessionStorage` (chave `onboarding_state`) para manter o progresso entre navegações sem persistir entre sessões.
+- **Ações**: `setRegistration()`, `setSelectedPlan()`, `setPaymentCompleted()`, `setPersonalization()` e `setSetupCompleted()` — cada uma avança o `currentStep` automaticamente.
+- **Memoização**: `useCallback` para todas as ações e `useMemo` para o valor do contexto.
+- **Ref Sync**: `useRef` para manter referência estável do estado entre atualizações, evitando race conditions.
+- **Hook**: `useOnboarding()` com validação de contexto (throw se usado fora do provider).
+- **Tipagens**: Interfaces em `types/onboarding.ts` — `PlanData`, `RegistrationData`, `PersonalizationData` e `OnboardingState`.
+
+### constants/plans.ts [NOVO]
+Configurações dos planos extraídas da página `plans/page.tsx` para constante compartilhada:
+- **`PLANS`**: Array de `PlanConfig` com nome, descrição, preço, variante, features e flags (isPopular, badge).
+- **`getPlanByName()`**: Busca um plano por nome e retorna `PlanData` para uso no contexto e no `OrderSummary`.
+- **Reutilização**: Importado por `plans/page.tsx` e `OrderSummary.tsx`, eliminando duplicação de dados.
 
 ### Avatar Padrão [NOVO]
 - Substituído URL externo do Google por SVG local (`public/default-avatar.svg`).
